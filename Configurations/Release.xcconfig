@@ -1,0 +1,41 @@
+//
+//  Release.xcconfig
+//  ChatAIT
+//
+//  Created by developer on 2/7/19.
+//  Copyright © 2019 Oleg Yaros. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "General.xcconfig"
+#include "GenericTraget.xcconfig"
+#include "Version.xcconfig"
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = 
+
+GCC_PREPROCESSOR_DEFINITIONS = NS_BLOCK_ASSERTIONS=1 NDEBUG=1
+ONLY_ACTIVE_ARCH = NO
+SKIP_INSTALL = NO
+
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+ENABLE_TESTABILITY = NO
+DEPLOYMENT_POSTPROCESSING = YES
+DEAD_CODE_STRIPPING = YES
+
+GCC_OPTIMIZATION_LEVEL = s
+SWIFT_OPTIMIZATION_LEVEL = -O
+
+ENABLE_NS_ASSERTIONS = NO
+SWIFT_COMPILATION_MODE = wholemodule
+MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE
+MTL_FAST_MATH = YES
+
+PLIST_FILE_OUTPUT_FORMAT = binary
+INFOPLIST_OUTPUT_FORMAT = binary
+STRINGS_FILE_OUTPUT_ENCODING = binary
+
+COPY_PHASE_STRIP = YES
+STRIP_INSTALLED_PRODUCT = YES
+STRIP_SWIFT_SYMBOLS = YES

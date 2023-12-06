@@ -1,0 +1,13 @@
+//
+//  Version.xcconfig
+//  ChatAIT
+//
+//  Created by developer on 01.09.2023.
+//  Copyright © 2023 Oleg Yaros. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+CURRENT_PROJECT_VERSION = 1
+MARKETING_VERSION = 0.1

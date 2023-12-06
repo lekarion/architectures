@@ -1,0 +1,13 @@
+#
+#   project.yml
+#   Architectures
+#
+
+include:
+    - path: "targets.yml"
+      relativePaths: false
+
+fileGroups:
+    - targets.yml
+    - project.yml
+    - Configurations

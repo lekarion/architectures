@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "913AAB18-00DD-4209-A1E3-B043F64EC8FA",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Architectures.xcodeproj",
+      "identifier" : "4592ADD70ACC7DA4C39909CE",
+      "name" : "Architectures"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Architectures.xcodeproj",
+        "identifier" : "3A5483E828508FB4C0A3802B",
+        "name" : "ArchitecturesTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:Architectures.xcodeproj",
+        "identifier" : "48C77D13289CEBFB70C0F0C6",
+        "name" : "ArchitecturesUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

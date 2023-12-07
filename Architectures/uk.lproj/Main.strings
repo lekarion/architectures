@@ -1,0 +1,24 @@
+
+/* Class = "UILabel"; text = "MVP"; ObjectID = "1cw-Q2-ZsT"; */
+"1cw-Q2-ZsT.text" = "MVP";
+
+/* Class = "UILabel"; text = "Apple MVC"; ObjectID = "2SA-wf-O9p"; */
+"2SA-wf-O9p.text" = "Apple MVC";
+
+/* Class = "UILabel"; text = "MVP"; ObjectID = "44f-4B-bYr"; */
+"44f-4B-bYr.text" = "MVP";
+
+/* Class = "UILabel"; text = "MVVM"; ObjectID = "F0x-gO-Q7E"; */
+"F0x-gO-Q7E.text" = "MVVM";
+
+/* Class = "UILabel"; text = "MVVM"; ObjectID = "Lje-0f-vWJ"; */
+"Lje-0f-vWJ.text" = "MVVM";
+
+/* Class = "UILabel"; text = "Apple MVC"; ObjectID = "dPe-8a-bNC"; */
+"dPe-8a-bNC.text" = "Apple MVC";
+
+/* Class = "UITableViewSection"; headerTitle = "Plain"; ObjectID = "nWW-tS-Rnc"; */
+"nWW-tS-Rnc.headerTitle" = "Пряма";
+
+/* Class = "UITableViewSection"; headerTitle = "Combine"; ObjectID = "vH6-Ej-Qh1"; */
+"vH6-Ej-Qh1.headerTitle" = "Combine";

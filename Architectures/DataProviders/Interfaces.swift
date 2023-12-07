@@ -7,6 +7,10 @@
 
 import Foundation
 
+protocol TestDescriptionInterface {
+    func testDescription() -> String
+}
+
 // MARK: - ### Data provider ### -
 protocol DataProviderInterface: AnyObject {
     var sortingOrder: SortingOrder { get set }
@@ -16,7 +20,7 @@ protocol DataProviderInterface: AnyObject {
     func flush()
 }
 
-protocol DataItemInterface {
+protocol DataItemInterface: TestDescriptionInterface {
     var iconName: String? { get }
     var title: String { get }
     var description: String? { get }
@@ -31,4 +35,10 @@ protocol SettingsProviderInterface: AnyObject {
 // MARK: -
 enum SortingOrder: String {
     case none, ascending, descending
+}
+
+extension DataItemInterface {
+    func testDescription() -> String {
+        "\(title) - \(description ?? "nil") - \(iconName ?? "nil")"
+    }
 }

@@ -10,25 +10,79 @@ import XCTest
 
 final class ArchitecturesTests: XCTestCase {
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        modelDataProvider = ModelDataProvider(with: "com.ArchitecturesTests")
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        modelDataProvider = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testPermanentLoading() throws {
+        modelDataProvider.sortingOrder = .none
+        let noneData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertFalse(noneData.isEmpty)
+
+        modelDataProvider.sortingOrder = .ascending
+        let ascendingData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(noneData.count, ascendingData.count)
+        XCTAssertNotEqual(noneData, ascendingData)
+
+        modelDataProvider.sortingOrder = .descending
+        let descendingData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(ascendingData.count, descendingData.count)
+        XCTAssertNotEqual(noneData, descendingData)
+        XCTAssertNotEqual(ascendingData, descendingData)
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testModifiedLoading() throws {
+        modelDataProvider.sortingOrder = .none
+        _ = modelDataProvider.reload()
+        modelDataProvider.merge([]) // reset modified items if they was loaded from file
+
+        let noneData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertFalse(noneData.isEmpty)
+
+        let testItemTitles = ["test1", "test2", "test3"]
+
+        modelDataProvider.merge(testItemTitles.map {
+            TestDataItem(iconName: nil, title: $0, description: "\($0) description")
+        })
+        let noneModifiedData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(noneData.count + testItemTitles.count, noneModifiedData.count)
+
+        modelDataProvider.sortingOrder = .ascending
+        let ascendingModifiedData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(noneModifiedData.count, ascendingModifiedData.count)
+        XCTAssertNotEqual(noneModifiedData, ascendingModifiedData)
+
+        modelDataProvider.sortingOrder = .descending
+        let descendingModifiedData = modelDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(ascendingModifiedData.count, descendingModifiedData.count)
+        XCTAssertNotEqual(noneModifiedData, descendingModifiedData)
+        XCTAssertNotEqual(ascendingModifiedData, descendingModifiedData)
+
+        modelDataProvider.flush()
+
+        let testProvider = ModelDataProvider(with: (modelDataProvider as! ModelDataProvider).identifier)
+
+        testProvider.sortingOrder = .none
+        let noneTestData = testProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(noneModifiedData.count, noneTestData.count)
     }
+
+    struct TestDataItem: DataItemInterface {
+        let iconName: String?
+        let title: String
+        let description: String?
+    }
+
+    private var modelDataProvider: DataProviderInterface!
 }

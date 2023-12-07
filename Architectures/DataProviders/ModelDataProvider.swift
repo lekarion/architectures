@@ -12,8 +12,6 @@ class ModelDataProvider: DataProviderInterface {
         self.identifier = identifier
     }
 
-    private(set) var structure = [DataItemInterface]()
-
     var sortingOrder: SortingOrder = .none {
         didSet {
             guard oldValue != sortingOrder else { return }
@@ -21,15 +19,19 @@ class ModelDataProvider: DataProviderInterface {
         }
     }
 
-    func reload() {
-        guard !loaded else { return }
+    func reload() -> [DataItemInterface] {
+        guard !loaded else { return structure }
 
         if nil == mutableStructure {
             var result = [DataItemInterface]()
             repeat {
-                guard let url = Bundle.main.url(forResource: identifier, withExtension: "json") else { break }
+                guard let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else { break }
+
+                let url = URL(fileURLWithPath: path, isDirectory: false).appendingPathComponent("\(identifier).json", conformingTo: .json)
+
                 guard let data = try? Data(contentsOf: url), !data.isEmpty else { break }
                 guard let structure = try? JSONDecoder().decode([DataItem].self, from: data) else { break }
+
                 result = structure
             } while false
 
@@ -38,10 +40,13 @@ class ModelDataProvider: DataProviderInterface {
 
         structure = Self.permanentStructure + mutableStructure!
         loaded = true
+
+        return structure
     }
 
     private let identifier: String
     private var mutableStructure: [DataItemInterface]?
+    private var structure = [DataItemInterface]()
     private var loaded = false
 }
 

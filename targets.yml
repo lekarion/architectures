@@ -5,7 +5,7 @@
 
 name: Architectures
 options:
-  bundleIdPrefix: com.olegyaros.architectures
+  bundleIdPrefix: com.olegyaros
   deploymentTarget:
     iOS: 14.0
   settingPresets: none
@@ -35,7 +35,6 @@ targetTemplates:
     type: bundle.unit-test
     platform: iOS
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.${target_name}
       PRODUCT_NAME: ${target_name}
       BUNDLE_LOADER: $(TEST_HOST)
       GENERATE_INFOPLIST_FILE: YES
@@ -46,7 +45,6 @@ targetTemplates:
     type: bundle.ui-testing
     platform: iOS
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.${target_name}
       PRODUCT_NAME: ${target_name}
       GENERATE_INFOPLIST_FILE: YES
     sources:
@@ -77,6 +75,8 @@ schemeTemplates:
 targets:
   Architectures: 
     templates: [CommonTarget]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.architectures
 
   ArchitecturesTests:
     templates: [CommonTargetTests]

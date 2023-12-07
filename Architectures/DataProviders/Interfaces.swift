@@ -8,10 +8,8 @@
 import Foundation
 
 protocol DataProviderInterface: AnyObject {
-    var structure: [DataItemInterface] { get }
     var sortingOrder: SortingOrder { get set }
-
-    func reload()
+    func reload() -> [DataItemInterface]
 }
 
 protocol DataItemInterface {

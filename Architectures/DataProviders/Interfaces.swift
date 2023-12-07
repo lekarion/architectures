@@ -7,9 +7,13 @@
 
 import Foundation
 
+// MARK: - ### Data provider ### -
 protocol DataProviderInterface: AnyObject {
     var sortingOrder: SortingOrder { get set }
+
     func reload() -> [DataItemInterface]
+    func merge(_ items: [DataItemInterface])
+    func flush()
 }
 
 protocol DataItemInterface {

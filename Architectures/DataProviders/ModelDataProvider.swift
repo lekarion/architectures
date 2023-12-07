@@ -25,14 +25,10 @@ class ModelDataProvider: DataProviderInterface {
         if nil == mutableStructure {
             var result = [DataItemInterface]()
             repeat {
-                guard let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else { break }
-
-                let url = URL(fileURLWithPath: path, isDirectory: false).appendingPathComponent("\(identifier).json", conformingTo: .json)
-
-                guard let data = try? Data(contentsOf: url), !data.isEmpty else { break }
+                guard let data = try? Data(contentsOf: urlToFule), !data.isEmpty else { break }
                 guard let structure = try? JSONDecoder().decode([DataItem].self, from: data) else { break }
 
-                result = structure
+                result = structure.compactMap{ Self.permanentNames.contains($0.title) ? nil : $0 }
             } while false
 
             mutableStructure = result
@@ -44,14 +40,30 @@ class ModelDataProvider: DataProviderInterface {
         return structure
     }
 
+    func merge(_ items: [DataItemInterface]) {
+        mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : $0 }
+    }
+
+    func flush() {
+        let structure = mutableStructure as? [DataItem] ?? []
+
+        guard let data = try? JSONEncoder().encode(structure) else { return }
+        try? data.write(to: urlToFule)
+    }
+
     private let identifier: String
     private var mutableStructure: [DataItemInterface]?
     private var structure = [DataItemInterface]()
     private var loaded = false
+
+    private lazy var urlToFule: URL = {
+        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+        return URL(fileURLWithPath: path ?? NSHomeDirectory(), isDirectory: true).appendingPathComponent("\(identifier).json", conformingTo: .json)
+    }()
 }
 
 private extension ModelDataProvider {
-    struct DataItem: DataItemInterface, Decodable {
+    struct DataItem: DataItemInterface, Codable {
         let iconName: String?
         let title: String
         let description: String?
@@ -62,5 +74,10 @@ private extension ModelDataProvider {
         guard let data = try? Data(contentsOf: url), !data.isEmpty else { return [DataItem]() }
         guard let structure = try? JSONDecoder().decode([DataItem].self, from: data) else { return [DataItem]() }
         return structure
+    }()
+
+    static let permanentNames: Set<String> = {
+        let allNames = permanentStructure.map { $0.title }
+        return Set(allNames)
     }()
 }

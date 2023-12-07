@@ -22,6 +22,13 @@ protocol DataItemInterface {
     var description: String? { get }
 }
 
-enum SortingOrder {
+// MARK: - ### Settings provider ### -
+
+protocol SettingsProviderInterface: AnyObject {
+    var sortingOrder: SortingOrder { get set }
+}
+
+// MARK: -
+enum SortingOrder: String {
     case none, ascending, descending
 }

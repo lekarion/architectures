@@ -8,16 +8,8 @@
 import XCTest
 @testable import Architectures
 
-final class ModelTests: XCTestCase {
-    override func setUpWithError() throws {
-        modelDataProvider = ModelDataProvider(with: "com.ArchitecturesTests")
-    }
-
-    override func tearDownWithError() throws {
-        modelDataProvider = nil
-    }
-
-    func testMVVM() throws {
+extension ArchitecturesTests {
+    func testMVVMModel() throws {
         let model = Model.MVVM(with: modelDataProvider)
 
         var callsCount = 0
@@ -75,5 +67,50 @@ final class ModelTests: XCTestCase {
         XCTAssertFalse(model.structure.isInUse)
     }
 
-    private var modelDataProvider: DataProviderInterface!
+    func testMVVMViewModel() throws {
+        let viewModel = ViewModel.MVVM()
+
+        var callsCount = 0
+        var lastCount = 0
+
+        let cancellable = viewModel.structure.bind { [weak self] value in
+            lastCount = value.count
+            callsCount += 1
+
+            self?.currentExpectation?.fulfill()
+        }
+
+        var step = 0
+        viewModel.sortingOrder = .none
+
+        XCTAssertTrue(viewModel.structure.isInUse)
+        XCTAssertEqual(callsCount, 0)
+        XCTAssertEqual(lastCount, 0)
+
+        let structure = viewModel.structure.value.map { $0.testDescription() }
+        XCTAssertEqual(callsCount, 0)
+        XCTAssertEqual(lastCount, 0)
+        XCTAssertNotEqual(structure.count, 0)
+
+        currentExpectation = XCTestExpectation(description: "Waiting for reload")
+
+        step += 1
+        viewModel.reloadData()
+        wait(for: [currentExpectation!])
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertGreaterThan(lastCount, structure.count)
+
+        currentExpectation = XCTestExpectation(description: "Waiting for clear")
+
+        step += 1
+        viewModel.clearData()
+        wait(for: [currentExpectation!])
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertEqual(lastCount, structure.count)
+
+        cancellable.cancel()
+        XCTAssertFalse(viewModel.structure.isInUse)
+    }
 }

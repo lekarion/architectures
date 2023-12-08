@@ -8,7 +8,7 @@
 import XCTest
 @testable import Architectures
 
-final class UtilitiesTests: XCTestCase {
+extension ArchitecturesTests {
     func testBinding() throws {
         let testBindValue = GenericBind(value: 0)
 

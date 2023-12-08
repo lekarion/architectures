@@ -15,6 +15,7 @@ final class ArchitecturesTests: XCTestCase {
 
     override func tearDownWithError() throws {
         modelDataProvider = nil
+        currentExpectation = nil
     }
 
     func testPermanentLoading() throws {
@@ -84,5 +85,6 @@ final class ArchitecturesTests: XCTestCase {
         let description: String?
     }
 
-    private var modelDataProvider: DataProviderInterface!
+    var modelDataProvider: DataProviderInterface!
+    var currentExpectation: XCTestExpectation?
 }

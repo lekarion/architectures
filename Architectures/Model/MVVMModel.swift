@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  MVVMModel.swift
 //  Architectures
 //
 //  Created by developer on 08.12.2023.

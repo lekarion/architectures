@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PlX-FN-s6V">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="CUP-wd-Hrq">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -7,6 +7,22 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="CdY-eZ-Vdt">
+            <objects>
+                <navigationController id="CUP-wd-Hrq" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="M3D-wQ-pYk">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="PlX-FN-s6V" kind="relationship" relationship="rootViewController" id="wPO-Aj-14A"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9NR-DA-3sB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1185" y="-256"/>
+        </scene>
         <!--Table View Controller-->
         <scene sceneID="IMk-La-KtH">
             <objects>
@@ -133,6 +149,9 @@
                                                 <constraint firstAttribute="trailing" secondItem="sAs-HG-xxW" secondAttribute="trailing" constant="8" id="hK6-OB-03P"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="k48-08-RCF" kind="show" id="2Pe-zg-8Av"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -263,10 +282,21 @@
                             <outlet property="delegate" destination="PlX-FN-s6V" id="BCi-m0-9Ew"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="iiH-PY-OOF"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p31-HS-wD3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-378" y="-256"/>
+        </scene>
+        <!--MVVM-->
+        <scene sceneID="nfn-fC-ko9">
+            <objects>
+                <viewControllerPlaceholder storyboardName="MVVM" id="k48-08-RCF" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="b98-Cv-6rU"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6ku-rP-F82" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="250" y="-256"/>
         </scene>
     </scenes>
     <resources>

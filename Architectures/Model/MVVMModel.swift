@@ -31,7 +31,7 @@ extension Model {
             guard !loaded else { return }
 
             structure.value = dataProvider.reload().map {
-                InfoItem(data: ItemData(iconName: "Emblems/\($0)", title: "\($0).title".localized, description: "\($0).description".localized))
+                InfoItem(data: ItemData(iconName: "Emblems/\($0.title)", title: $0.title.localized, description: $0.description?.localized))
             }
             loaded = true
         }

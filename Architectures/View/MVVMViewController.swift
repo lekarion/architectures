@@ -7,34 +7,11 @@
 
 import UIKit
 
-protocol MVVMViewInterface: AnyObject {
-    var clearButtonEnabled: Bool { get set }
-    var reloadButtonEnabled: Bool { get set }
-    var sortingOrderButtonEnabled: Bool { get set }
-
-    var dataSource: MVVMViewDataSource? { get set }
-    var delegate: MVVMViewDelegate? { get set }
-
-    func reloadData()
-}
-
-protocol MVVMViewDataSource: AnyObject {
-    func mvvmViewNumberOfItems(_ view: MVVMViewInterface) -> Int
-    func mvvmView(_ view: MVVMViewInterface, itemAt index: Int) -> VisualItem
-}
-
-protocol MVVMViewDelegate: AnyObject {
-    func mvvmView(_ view: MVVMViewInterface, sortingOrderDidChange: Model.SortingOrder)
-    func mvvmViewDidRequestClear(_ view: MVVMViewInterface)
-    func mvvmViewDidRequestReload(_ view: MVVMViewInterface)
-}
-
-// MARK: -
 class MVVMViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let interface = children.first(where: { $0 is MVVMViewInterface }) as? MVVMViewInterface else {
+        guard let interface = children.first(where: { $0 is ViewInterface }) as? ViewInterface else {
             fatalError("No interface controller found")
         }
 
@@ -55,35 +32,39 @@ class MVVMViewController: UIViewController {
             self.viewInterface.reloadButtonEnabled = actions.contains(.reload)
             self.viewInterface.sortingOrderButtonEnabled = actions.contains(.changeSortingOrder)
         }
+
+        viewInterface.clearButtonEnabled = viewModel.availableActions.value.contains(.clear)
+        viewInterface.reloadButtonEnabled = viewModel.availableActions.value.contains(.reload)
+        viewInterface.sortingOrderButtonEnabled = viewModel.availableActions.value.contains(.changeSortingOrder)
     }
 
     private let viewModel = ViewModel.MVVM()
     private var structureCancellable: BindCancellable?
     private var actionsCancellable: BindCancellable?
 
-    private weak var viewInterface: MVVMViewInterface!
+    private weak var viewInterface: ViewInterface!
 }
 
-extension MVVMViewController: MVVMViewDataSource {
-    func mvvmViewNumberOfItems(_ view: MVVMViewInterface) -> Int {
+extension MVVMViewController: ViewDataSource {
+    func viewControllerNumberOfItems(_ view: ViewInterface) -> Int {
         viewModel.structure.value.count
     }
 
-    func mvvmView(_ view: MVVMViewInterface, itemAt index: Int) -> VisualItem {
+    func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
         viewModel.structure.value[index]
     }
 }
 
-extension MVVMViewController: MVVMViewDelegate {
-    func mvvmView(_ view: MVVMViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
+extension MVVMViewController: ViewDelegate {
+    func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         viewModel.sortingOrder = order
     }
 
-    func mvvmViewDidRequestClear(_ view: MVVMViewInterface) {
+    func viewControllerDidRequestClear(_ view: ViewInterface) {
         viewModel.clearData()
     }
 
-    func mvvmViewDidRequestReload(_ view: MVVMViewInterface) {
+    func viewControllerDidRequestReload(_ view: ViewInterface) {
         viewModel.reloadData()
     }
 }

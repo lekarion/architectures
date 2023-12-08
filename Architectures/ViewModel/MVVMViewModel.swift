@@ -48,16 +48,15 @@ extension ViewModel {
             modelCancellable = model.structure.bind { [weak self] structure in
                 guard let self = self else { return }
 
-                self.workQueue.async {
-                    self.structure.value = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
+                let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
+                DispatchQueue.main.async {
+                    self.structure.value = newStucture
                     self.availableActions.value = Self.availableActions(for: self.structure.value)
                 }
             }
         }
 
         private let model: Model.MVVM
-        private let workQueue = DispatchQueue(label: "com.developer.viewModelQueue", qos: .default)
-
         private var modelCancellable: BindCancellable?
     }
 }
@@ -65,6 +64,6 @@ extension ViewModel {
 private extension ViewModel.MVVM {
     static let emptyStructure = [ViewModel.Scheme("Schemes/mvvm-scheme")]
     static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
-        (emptyStructure.count == structure.count) ? .all : .reload
+        (emptyStructure.count == structure.count) ? .reload : .all
     }
 }

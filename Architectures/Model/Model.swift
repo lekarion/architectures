@@ -30,7 +30,7 @@ class Model {
         }
     }
 
-    enum SortingOrder {
+    enum SortingOrder: CaseIterable {
         case none, ascending, descending
     }
 

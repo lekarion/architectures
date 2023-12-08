@@ -27,7 +27,6 @@ protocol DataItemInterface: TestDescriptionInterface {
 }
 
 // MARK: - ### Settings provider ### -
-
 protocol SettingsProviderInterface: AnyObject {
     var sortingOrder: SortingOrder { get set }
 }

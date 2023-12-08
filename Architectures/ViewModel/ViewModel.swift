@@ -61,6 +61,16 @@ class ViewModel {
         let modelItem: DataModelItem
     }
 
+    struct Actions: OptionSet {
+        let rawValue: Int
+
+        static let clear = Actions(rawValue: 1 << 0)
+        static let reload = Actions(rawValue: 1 << 1)
+        static let changeSortingOrder = Actions(rawValue: 1 << 2)
+
+        static let all: Actions = [.clear, .reload, .changeSortingOrder]
+    }
+
     private init() {
     }
 }

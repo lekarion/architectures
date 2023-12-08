@@ -8,6 +8,7 @@
 import Foundation
 
 protocol ModelItem {
+    func testDescription() -> String
 }
 
 protocol DataModelItem: ModelItem {
@@ -47,5 +48,11 @@ extension Model.SortingOrder {
         case .descending:
             return .descending
         }
+    }
+}
+
+extension DataModelItem {
+    func testDescription() -> String {
+        "\(data.title) - \(data.iconName ?? "nil") - \(data.description ?? "nil")"
     }
 }

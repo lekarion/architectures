@@ -1,0 +1,41 @@
+//
+//  Debug.xcconfig
+//  Architectures
+//
+//  Created by developer on 2/7/19.
+//  Copyright © 2019 Oleg Yaros. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "General.xcconfig"
+#include "GenericTraget.xcconfig"
+#include "Version.xcconfig"
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
+
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1
+ONLY_ACTIVE_ARCH = YES
+SKIP_INSTALL = YES
+
+DEBUG_INFORMATION_FORMAT = dwarf
+ENABLE_TESTABILITY = YES
+DEPLOYMENT_POSTPROCESSING = NO
+DEAD_CODE_STRIPPING = NO
+
+GCC_OPTIMIZATION_LEVEL = 0
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+
+ENABLE_NS_ASSERTIONS = YES
+SWIFT_COMPILATION_MODE = singlefile
+MTL_ENABLE_DEBUG_INFO = YES
+MTL_FAST_MATH = YES
+
+PLIST_FILE_OUTPUT_FORMAT = same-as-input
+INFOPLIST_OUTPUT_FORMAT = same-as-input
+STRINGS_FILE_OUTPUT_ENCODING = UTF-16
+
+COPY_PHASE_STRIP = NO
+STRIP_INSTALLED_PRODUCT = NO
+STRIP_SWIFT_SYMBOLS = NO

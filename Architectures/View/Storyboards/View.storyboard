@@ -80,6 +80,7 @@
                         <outlet property="clearButton" destination="cd8-x6-tWf" id="KGM-rS-660"/>
                         <outlet property="reloadButton" destination="xr7-kL-b9E" id="Oii-tY-1dJ"/>
                         <outlet property="sortingButton" destination="ZVa-BW-iNB" id="u33-CO-tLE"/>
+                        <outlet property="titleLabel" destination="J1B-vC-N0w" id="zaf-H3-mrA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

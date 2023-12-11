@@ -36,6 +36,8 @@ class MVVMViewController: UIViewController {
         viewInterface.clearButtonEnabled = viewModel.availableActions.value.contains(.clear)
         viewInterface.reloadButtonEnabled = viewModel.availableActions.value.contains(.reload)
         viewInterface.sortingOrderButtonEnabled = viewModel.availableActions.value.contains(.changeSortingOrder)
+
+        (viewInterface as? UIViewController)?.title = "MVVM"
     }
 
     private let viewModel = ViewModel.MVVM()

@@ -28,9 +28,7 @@ class MVVMCombineViewController: UIViewController {
         viewModel.availableActions.receive(on: DispatchQueue.main).map { $0.contains(.reload) }.assign(to: \.reloadButtonEnabled, on: viewInterface).store(in: &bag)
         viewModel.availableActions.receive(on: DispatchQueue.main).map { $0.contains(.changeSortingOrder) }.assign(to: \.sortingOrderButtonEnabled, on: viewInterface).store(in: &bag)
 
-        viewInterface.clearButtonEnabled = viewModel.availableActions.value.contains(.clear)
-        viewInterface.reloadButtonEnabled = viewModel.availableActions.value.contains(.reload)
-        viewInterface.sortingOrderButtonEnabled = viewModel.availableActions.value.contains(.changeSortingOrder)
+        (viewInterface as? UIViewController)?.title = "MVVM + Combine"
     }
 
     private let viewModel = ViewModel.MVVMCombine()

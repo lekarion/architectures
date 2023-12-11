@@ -58,6 +58,12 @@ class ViewController: UIViewController, ViewInterface {
         dataViewController.reloadData()
     }
 
+    override var title: String? {
+        didSet {
+            titleLabel.text = title
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -88,6 +94,7 @@ class ViewController: UIViewController, ViewInterface {
     @IBOutlet private weak var clearButton: UIButton!
     @IBOutlet private weak var sortingButton: UIButton!
     @IBOutlet private weak var reloadButton: UIButton!
+    @IBOutlet private weak var titleLabel: UILabel!
 
     private var dataViewController: DataViewControllerInterface!
 }

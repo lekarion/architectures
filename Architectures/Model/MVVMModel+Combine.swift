@@ -1,19 +1,20 @@
 //
-//  MVVMModel.swift
+//  MVVMModel+Combine.swift
 //  Architectures
 //
-//  Created by developer on 08.12.2023.
+//  Created by developer on 11.12.2023.
 //
 
+import Combine
 import Foundation
 
-protocol MVVMModelInterface: ModelInterface {
-    var structure: GenericBind<[ModelItem]> { get }
+protocol MVVMModelCombineInterface: ModelInterface {
+    var structure: CurrentValueSubject<[ModelItem], Never> { get }
 }
 
 extension Model {
-    class MVVM: MVVMModelInterface {
-        let structure = GenericBind(value: [ModelItem]())
+    class MVVMCombine: MVVMModelCombineInterface {
+        let structure = CurrentValueSubject<[ModelItem], Never>([])
 
         var sortingOrder: Model.SortingOrder = .none {
             didSet {
@@ -49,6 +50,6 @@ extension Model {
     }
 }
 
-extension MVVMModelInterface {
+extension MVVMModelCombineInterface {
     var rawStructure: [ModelItem] { structure.value }
 }

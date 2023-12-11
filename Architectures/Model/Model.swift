@@ -15,6 +15,14 @@ protocol DataModelItem: ModelItem {
     var data: Model.ItemData { get }
 }
 
+protocol ModelInterface: AnyObject {
+    var rawStructure: [ModelItem] { get }
+    var sortingOrder: Model.SortingOrder { get set }
+
+    func clear()
+    func reload()
+}
+
 class Model {
     struct ItemData {
         let iconName: String?

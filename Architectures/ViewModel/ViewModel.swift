@@ -34,6 +34,14 @@ extension ModelItem {
     }
 }
 
+protocol ViewModelInterface: AnyObject {
+    var rawStructure: [VisualItem] { get }
+    var sortingOrder: Model.SortingOrder { get set }
+
+    func reloadData()
+    func clearData()
+}
+
 class ViewModel {
     struct Scheme: SchemeItem {
         let identifier: String

@@ -9,27 +9,27 @@ import XCTest
 @testable import Architectures
 
 extension ArchitecturesTests {
-    func testMVVMModel() throws {
-        let model = Model.MVVM(with: modelDataProvider)
+    func baseModelProcessing<T: ModelInterface>(model: T, ignoreFirst: Bool = false, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
+        var callsCount = ignoreFirst ? -1 : 0
+        var lastCount = model.rawStructure.count
 
-        var callsCount = 0
-        var lastCount = 0
-
-        let cancellable = model.structure.bind { value  in
-            lastCount = value.count
+        bind { value in
             callsCount += 1
+
+            guard callsCount > 0 else { return }
+
+            lastCount = value.count
         }
 
         var step = 0
         model.sortingOrder = .none
 
-        XCTAssertTrue(model.structure.isInUse)
         XCTAssertEqual(callsCount, 0)
         XCTAssertEqual(lastCount, 0)
 
         step += 1
         model.reload()
-        let noneStructure = model.structure.value.map { $0.testDescription() }
+        let noneStructure = model.rawStructure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertNotEqual(lastCount, 0)
@@ -40,7 +40,7 @@ extension ArchitecturesTests {
         XCTAssertEqual(callsCount + 1, step)
 
         model.reload()
-        let ascendingStructure = model.structure.value.map { $0.testDescription() }
+        let ascendingStructure = model.rawStructure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(noneStructure.count, ascendingStructure.count)
@@ -49,7 +49,7 @@ extension ArchitecturesTests {
         step += 1
         model.sortingOrder = .descending
         model.reload()
-        let descendingStructure = model.structure.value.map { $0.testDescription() }
+        let descendingStructure = model.rawStructure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(ascendingStructure.count, descendingStructure.count)
@@ -61,35 +61,52 @@ extension ArchitecturesTests {
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, 0)
-        XCTAssertTrue(model.structure.value.isEmpty)
+        XCTAssertTrue(model.rawStructure.isEmpty)
+    }
 
-        cancellable.cancel()
+    func testMVVMModel() throws {
+        let model = Model.MVVM(with: modelDataProvider)
+
+        var cancellable: BindCancellable?
+        try baseModelProcessing(model: model) {
+            cancellable = model.structure.bind($0)
+        }
+
+        XCTAssertTrue(model.structure.isInUse)
+
+        cancellable?.cancel()
         XCTAssertFalse(model.structure.isInUse)
     }
 
-    func testMVVMViewModel() throws {
-        let viewModel = ViewModel.MVVM()
+    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: T, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
+        let effectiveIgnoreFirst = 0 > ignoreFirst ? 0 : -ignoreFirst
 
-        var callsCount = 0
-        var lastCount = 0
+        var callsCount = effectiveIgnoreFirst
+        var lastCount = viewModel.rawStructure.count
 
-        let cancellable = viewModel.structure.bind { [weak self] value in
-            lastCount = value.count
+        currentExpectation = XCTestExpectation(description: "Waiting for init")
+        bind { [weak self] value in
             callsCount += 1
 
+            guard callsCount >= 0 else { return }
+
+            lastCount = value.count
             self?.currentExpectation?.fulfill()
+        }
+
+        if 0 != effectiveIgnoreFirst {
+            wait(for: [currentExpectation!])
         }
 
         var step = 0
         viewModel.sortingOrder = .none
 
-        XCTAssertTrue(viewModel.structure.isInUse)
         XCTAssertEqual(callsCount, 0)
-        XCTAssertEqual(lastCount, 0)
+        XCTAssertEqual(lastCount, 1)
 
-        let structure = viewModel.structure.value.map { $0.testDescription() }
+        let structure = viewModel.rawStructure.map { $0.testDescription() }
         XCTAssertEqual(callsCount, 0)
-        XCTAssertEqual(lastCount, 0)
+        XCTAssertEqual(lastCount, 1)
         XCTAssertNotEqual(structure.count, 0)
 
         currentExpectation = XCTestExpectation(description: "Waiting for reload")
@@ -109,8 +126,19 @@ extension ArchitecturesTests {
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, structure.count)
+    }
 
-        cancellable.cancel()
+    func testMVVMViewModel() throws {
+        let viewModel = ViewModel.MVVM()
+
+        var cancellable: BindCancellable?
+        try baseViewModelProcessing(viewModel: viewModel) {
+            cancellable = viewModel.structure.bind($0)
+        }
+
+        XCTAssertTrue(viewModel.structure.isInUse)
+
+        cancellable?.cancel()
         XCTAssertFalse(viewModel.structure.isInUse)
     }
 }

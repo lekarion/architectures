@@ -8,7 +8,7 @@
 import Foundation
 import UIKit.UIImage
 
-protocol MVVMViewModelInterface: AnyObject {
+protocol MVVMViewModelInterface: ViewModelInterface {
     var structure: GenericBind<[VisualItem]> { get }
     var availableActions: GenericBind<ViewModel.Actions> { get }
 }
@@ -67,4 +67,8 @@ private extension ViewModel.MVVM {
     static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
         (emptyStructure.count == structure.count) ? .all : .reload
     }
+}
+
+extension MVVMViewModelInterface {
+    var rawStructure: [VisualItem] { structure.value }
 }

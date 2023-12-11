@@ -16,8 +16,8 @@ protocol MVVMViewModelCombineInterface: ViewModelInterface {
 
 extension ViewModel {
     class MVVMCombine: MVVMViewModelCombineInterface {
-        let structure: CurrentValueSubject<[VisualItem], Never>
-        let availableActions: CurrentValueSubject<ViewModel.Actions, Never>
+        let structure = CurrentValueSubject<[VisualItem], Never>([])
+        let availableActions = CurrentValueSubject<ViewModel.Actions, Never>([])
 
         var sortingOrder: Model.SortingOrder {
             get { model.sortingOrder }
@@ -43,8 +43,6 @@ extension ViewModel {
             }
 
             model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
-            structure = CurrentValueSubject<[VisualItem], Never>([])
-            availableActions = CurrentValueSubject<ViewModel.Actions, Never>(Self.availableActions(for: structure.value))
 
             modelCancellable = model.structure.receive(on: workQueue).sink { [weak self] value in
                 guard let self = self else { return }

@@ -95,25 +95,27 @@ extension ArchitecturesTests {
         }
 
         if 0 != effectiveIgnoreFirst {
-            wait(for: [currentExpectation!])
+            wait(for: [currentExpectation!], timeout: 5.0)
         }
 
         var step = 0
         viewModel.sortingOrder = .none
 
         XCTAssertEqual(callsCount, 0)
-        XCTAssertEqual(lastCount, 1)
+        XCTAssertNotEqual(lastCount, 0)
+
+        let emptyCount = lastCount
 
         let structure = viewModel.rawStructure.map { $0.testDescription() }
         XCTAssertEqual(callsCount, 0)
-        XCTAssertEqual(lastCount, 1)
-        XCTAssertNotEqual(structure.count, 0)
+        XCTAssertEqual(lastCount, emptyCount)
+        XCTAssertEqual(structure.count, emptyCount)
 
         currentExpectation = XCTestExpectation(description: "Waiting for reload")
 
         step += 1
         viewModel.reloadData()
-        wait(for: [currentExpectation!])
+        wait(for: [currentExpectation!], timeout: 2.0)
 
         XCTAssertEqual(callsCount, step)
         XCTAssertGreaterThan(lastCount, structure.count)
@@ -122,7 +124,7 @@ extension ArchitecturesTests {
 
         step += 1
         viewModel.clearData()
-        wait(for: [currentExpectation!])
+        wait(for: [currentExpectation!], timeout: 2.0)
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, structure.count)

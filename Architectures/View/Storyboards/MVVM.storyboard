@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Qch-S4-Xm3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -12,7 +12,7 @@
         <!--View Controller-->
         <scene sceneID="4ts-4k-aqh">
             <objects>
-                <viewController id="Qch-S4-Xm3" customClass="MVVMViewController" customModule="Architectures" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="com.mvvm.viewController" id="Qch-S4-Xm3" customClass="MVVMViewController" customModule="Architectures" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="A0U-Pc-eZJ">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -44,9 +44,41 @@
                 <viewControllerPlaceholder storyboardName="View" id="yxx-4l-zxd" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Kz-o8-RWy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-118" y="-51"/>
+            <point key="canvasLocation" x="235" y="239"/>
+        </scene>
+        <!--Combine View Controller-->
+        <scene sceneID="H2A-tJ-BtC">
+            <objects>
+                <viewController storyboardIdentifier="com.mvvm.combine.viewController" id="gtn-Z7-KSv" customClass="MVVMCombineViewController" customModule="Architectures" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qA5-3s-HFn">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DHt-1l-0zp">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <connections>
+                                    <segue destination="yxx-4l-zxd" kind="embed" id="uQV-93-Xk3"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="VWx-JF-OhP"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="DHt-1l-0zp" firstAttribute="leading" secondItem="qA5-3s-HFn" secondAttribute="leading" id="476-pK-Sng"/>
+                            <constraint firstItem="DHt-1l-0zp" firstAttribute="trailing" secondItem="qA5-3s-HFn" secondAttribute="trailing" id="U24-OJ-Ebg"/>
+                            <constraint firstAttribute="bottom" secondItem="DHt-1l-0zp" secondAttribute="bottom" id="iDm-NF-mJd"/>
+                            <constraint firstItem="DHt-1l-0zp" firstAttribute="top" secondItem="qA5-3s-HFn" secondAttribute="top" id="kLb-rZ-GNX"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Klk-3V-6yZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-637" y="620"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="uQV-93-Xk3"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

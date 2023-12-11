@@ -51,7 +51,7 @@ extension ViewModel {
 
                 let visualValue = value.compactMap({ $0.toVisualItem() })
                 self.structure.send(Self.emptyStructure + visualValue)
-                self.availableActions.send(Self.availableActions(for: visualValue))
+                self.availableActions.send(Self.availableActions(for: self.structure.value))
             }
         }
 
@@ -69,7 +69,7 @@ extension ViewModel {
 private extension ViewModel.MVVMCombine {
     static let emptyStructure = [ViewModel.Scheme("Schemes/mvvm-scheme")]
     static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
-        (emptyStructure.count == structure.count) ? .all : .reload
+        (emptyStructure.count == structure.count) ? .reload : .all
     }
 }
 

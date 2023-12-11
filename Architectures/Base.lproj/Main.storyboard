@@ -273,6 +273,9 @@
                                                 <constraint firstItem="wvv-W2-6kf" firstAttribute="leading" secondItem="s79-hX-Fnu" secondAttribute="leadingMargin" id="vKF-a6-7Dc"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="2Y5-YY-om6" kind="show" id="Zrh-4r-6Y7"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -288,15 +291,25 @@
             </objects>
             <point key="canvasLocation" x="-378" y="-256"/>
         </scene>
-        <!--MVVM-->
+        <!--com.mvvm.viewController-->
         <scene sceneID="nfn-fC-ko9">
             <objects>
-                <viewControllerPlaceholder storyboardName="MVVM" id="k48-08-RCF" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="MVVM" referencedIdentifier="com.mvvm.viewController" id="k48-08-RCF" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="b98-Cv-6rU"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6ku-rP-F82" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="250" y="-256"/>
+            <point key="canvasLocation" x="249" y="-301"/>
+        </scene>
+        <!--com.mvvm.combine.viewController-->
+        <scene sceneID="PrR-VU-VMi">
+            <objects>
+                <viewControllerPlaceholder storyboardName="MVVM" referencedIdentifier="com.mvvm.combine.viewController" id="2Y5-YY-om6" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="6na-Gn-dgd"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8AD-re-Myo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="292" y="-96"/>
         </scene>
     </scenes>
     <resources>

@@ -22,16 +22,6 @@ class MVVMViewController: UIViewController {
         viewInterface.dataSource = self
 
     #if USE_COMBINE_FOR_VIEW_ACTIONS
-        viewInterface.actionEvent.sink { [weak self] in
-            switch $0 {
-            case .chnageSortingOrder(let order):
-                self?.viewModel.sortingOrder = order
-            case .clear:
-                self?.viewModel.clearData()
-            case .reload:
-                self?.viewModel.reloadData()
-            }
-        }.store(in: &bag)
     #else
         viewInterface.delegate = self
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
@@ -62,9 +52,6 @@ class MVVMViewController: UIViewController {
     private var actionsCancellable: BindCancellable?
 
     private weak var viewInterface: ViewInterface!
-#if USE_COMBINE_FOR_VIEW_ACTIONS
-    private var bag = Set<AnyCancellable>()
-#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 }
 
 extension MVVMViewController: ViewDataSource {
@@ -78,6 +65,23 @@ extension MVVMViewController: ViewDataSource {
 }
 
 #if USE_COMBINE_FOR_VIEW_ACTIONS
+extension MVVMViewController: ViewModelActionInterface {
+    var actionEvent: AnyPublisher<ViewModelAction, Never> {
+        viewInterface.actionEvent.map {
+            let action: ViewModelAction
+            switch $0 {
+            case .chnageSortingOrder(let order):
+                action = .changeSortingOrder(order: order)
+            case .clear:
+                action = .clear
+            case .reload:
+                action = .reload
+            }
+
+            return action
+        }.eraseToAnyPublisher()
+    }
+}
 #else
 extension MVVMViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {

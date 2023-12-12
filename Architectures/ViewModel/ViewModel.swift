@@ -5,6 +5,9 @@
 //  Created by developer on 08.12.2023.
 //
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 import Foundation
 import UIKit.UIImage
 
@@ -34,6 +37,23 @@ extension ModelItem {
     }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+protocol ViewModelInterface: AnyObject {
+    var rawStructure: [VisualItem] { get }
+    var sortingOrder: Model.SortingOrder { get }
+
+    func setup(with actionInterface: ViewModelActionInterface)
+}
+
+protocol ViewModelActionInterface: AnyObject {
+    var actionEvent: AnyPublisher<ViewModelAction, Never> { get }
+}
+
+enum ViewModelAction {
+    case changeSortingOrder(order: Model.SortingOrder)
+    case clear, reload
+}
+#else
 protocol ViewModelInterface: AnyObject {
     var rawStructure: [VisualItem] { get }
     var sortingOrder: Model.SortingOrder { get set }
@@ -41,6 +61,7 @@ protocol ViewModelInterface: AnyObject {
     func reloadData()
     func clearData()
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
 class ViewModel {
     struct Scheme: SchemeItem {

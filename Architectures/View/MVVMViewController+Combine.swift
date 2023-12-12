@@ -19,16 +19,6 @@ class MVVMCombineViewController: UIViewController {
         viewInterface = interface
         viewInterface.dataSource = self
     #if USE_COMBINE_FOR_VIEW_ACTIONS
-        viewInterface.actionEvent.sink { [weak self] in
-            switch $0 {
-            case .chnageSortingOrder(let order):
-                self?.viewModel.sortingOrder = order
-            case .clear:
-                self?.viewModel.clearData()
-            case .reload:
-                self?.viewModel.reloadData()
-            }
-        }.store(in: &bag)
     #else
         viewInterface.delegate = self
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
@@ -61,6 +51,23 @@ extension MVVMCombineViewController: ViewDataSource {
 }
 
 #if USE_COMBINE_FOR_VIEW_ACTIONS
+extension MVVMCombineViewController: ViewModelActionInterface {
+    var actionEvent: AnyPublisher<ViewModelAction, Never> {
+        viewInterface.actionEvent.map {
+            let action: ViewModelAction
+            switch $0 {
+            case .chnageSortingOrder(let order):
+                action = .changeSortingOrder(order: order)
+            case .clear:
+                action = .clear
+            case .reload:
+                action = .reload
+            }
+
+            return action
+        }.eraseToAnyPublisher()
+    }
+}
 #else
 extension MVVMCombineViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {

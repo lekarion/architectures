@@ -19,6 +19,27 @@ extension ViewModel {
         let structure = CurrentValueSubject<[VisualItem], Never>([])
         let availableActions = CurrentValueSubject<ViewModel.Actions, Never>([])
 
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        var sortingOrder: Model.SortingOrder { model.sortingOrder }
+
+        func setup(with actionInterface: ViewModelActionInterface) {
+            actionInterface.actionEvent.sink { [weak self] in
+                guard let self = self else { return }
+
+                switch $0 {
+                case .changeSortingOrder(let order):
+                    self.model.sortingOrder = order
+
+                    guard !self.model.structure.value.isEmpty else { break }
+                    self.model.reload()
+                case .clear:
+                    self.model.clear()
+                case .reload:
+                    self.model.reload()
+                }
+            }.store(in: &bag)
+        }
+    #else
         var sortingOrder: Model.SortingOrder {
             get { model.sortingOrder }
             set {
@@ -36,6 +57,7 @@ extension ViewModel {
         func clearData() {
             model.clear()
         }
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         init() {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
@@ -44,23 +66,23 @@ extension ViewModel {
 
             model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
 
-            modelCancellable = model.structure.receive(on: workQueue).sink { [weak self] value in
+            model.structure.receive(on: workQueue).sink { [weak self] value in
                 guard let self = self else { return }
 
                 let visualValue = value.compactMap({ $0.toVisualItem() })
                 self.structure.send(Self.emptyStructure + visualValue)
                 self.availableActions.send(Self.availableActions(for: self.structure.value))
-            }
+            }.store(in: &bag)
         }
 
         deinit {
-            modelCancellable?.cancel()
+            bag.forEach { $0.cancel() }
         }
 
         private let model: Model.MVVMCombine
         private let workQueue = DispatchQueue(label: "com.developer.viewModelQueue", qos: .default)
 
-        private var modelCancellable: AnyCancellable?
+        private var bag = Set<AnyCancellable>()
     }
 }
 

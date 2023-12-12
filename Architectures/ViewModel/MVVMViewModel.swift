@@ -5,6 +5,9 @@
 //  Created by developer on 08.12.2023.
 //
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 import Foundation
 import UIKit.UIImage
 
@@ -18,6 +21,27 @@ extension ViewModel {
         let structure: GenericBind<[VisualItem]>
         let availableActions: GenericBind<ViewModel.Actions>
 
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        var sortingOrder: Model.SortingOrder { model.sortingOrder }
+
+        func setup(with actionInterface: ViewModelActionInterface) {
+            actionInterface.actionEvent.sink { [weak self] in
+                guard let self = self else { return }
+
+                switch $0 {
+                case .changeSortingOrder(let order):
+                    self.model.sortingOrder = order
+
+                    guard !self.model.structure.value.isEmpty else { break }
+                    self.model.reload()
+                case .clear:
+                    self.model.clear()
+                case .reload:
+                    self.model.reload()
+                }
+            }.store(in: &bag)
+        }
+    #else
         var sortingOrder: Model.SortingOrder {
             get { model.sortingOrder }
             set {
@@ -35,6 +59,7 @@ extension ViewModel {
         func clearData() {
             model.clear()
         }
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         init() {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
@@ -62,6 +87,9 @@ extension ViewModel {
 
         private let model: Model.MVVM
         private var modelCancellable: BindCancellable?
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        private var bag = Set<AnyCancellable>()
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
 }
 

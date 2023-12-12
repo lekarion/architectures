@@ -24,11 +24,11 @@ extension ArchitecturesTests {
     }
 
     func testMVVMViewModelCombine() throws {
-        let viewModel = ViewModel.MVVMCombine()
+        let viewModelHolder = ViewModelHolder(ViewModel.MVVMCombine())
 
         var cancellable: AnyCancellable?
-        try baseViewModelProcessing(viewModel: viewModel, ignoreFirst: 2) { handler in
-            cancellable = viewModel.structure.sink {
+        try baseViewModelProcessing(viewModel: viewModelHolder, ignoreFirst: 2) { handler in
+            cancellable = viewModelHolder.viewModel.structure.sink {
                 handler($0)
             }
         }

@@ -18,7 +18,20 @@ class MVVMCombineViewController: UIViewController {
 
         viewInterface = interface
         viewInterface.dataSource = self
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewInterface.actionEvent.sink { [weak self] in
+            switch $0 {
+            case .chnageSortingOrder(let order):
+                self?.viewModel.sortingOrder = order
+            case .clear:
+                self?.viewModel.clearData()
+            case .reload:
+                self?.viewModel.reloadData()
+            }
+        }.store(in: &bag)
+    #else
         viewInterface.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         viewModel.structure.receive(on: DispatchQueue.main).sink { [weak self] _ in
             self?.viewInterface.reloadData()
@@ -47,6 +60,8 @@ extension MVVMCombineViewController: ViewDataSource {
     }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+#else
 extension MVVMCombineViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         viewModel.sortingOrder = order
@@ -60,3 +75,4 @@ extension MVVMCombineViewController: ViewDelegate {
         viewModel.reloadData()
     }
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS

@@ -5,6 +5,9 @@
 //  Created by developer on 08.12.2023.
 //
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 import UIKit
 
 class MVVMViewController: UIViewController {
@@ -17,7 +20,21 @@ class MVVMViewController: UIViewController {
 
         viewInterface = interface
         viewInterface.dataSource = self
+
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewInterface.actionEvent.sink { [weak self] in
+            switch $0 {
+            case .chnageSortingOrder(let order):
+                self?.viewModel.sortingOrder = order
+            case .clear:
+                self?.viewModel.clearData()
+            case .reload:
+                self?.viewModel.reloadData()
+            }
+        }.store(in: &bag)
+    #else
         viewInterface.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         structureCancellable = viewModel.structure.bind { [weak self] _ in
             DispatchQueue.main.async {
@@ -45,6 +62,9 @@ class MVVMViewController: UIViewController {
     private var actionsCancellable: BindCancellable?
 
     private weak var viewInterface: ViewInterface!
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+    private var bag = Set<AnyCancellable>()
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 }
 
 extension MVVMViewController: ViewDataSource {
@@ -57,6 +77,8 @@ extension MVVMViewController: ViewDataSource {
     }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+#else
 extension MVVMViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         viewModel.sortingOrder = order
@@ -70,3 +92,4 @@ extension MVVMViewController: ViewDelegate {
         viewModel.reloadData()
     }
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS

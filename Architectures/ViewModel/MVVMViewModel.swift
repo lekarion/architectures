@@ -56,6 +56,10 @@ extension ViewModel {
             }
         }
 
+        deinit {
+            modelCancellable?.cancel()
+        }
+
         private let model: Model.MVVM
         private var modelCancellable: BindCancellable?
     }

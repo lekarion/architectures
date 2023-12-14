@@ -5,6 +5,9 @@
 //  Created by developer on 08.12.2023.
 //
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 import UIKit
 
 protocol ViewInterface: AnyObject {
@@ -14,7 +17,11 @@ protocol ViewInterface: AnyObject {
 
     var sortingOrder: Model.SortingOrder { get set }
     var dataSource: ViewDataSource? { get set }
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+    var actionEvent: AnyPublisher<ViewActions, Never> { get }
+#else
     var delegate: ViewDelegate? { get set }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
     func reloadData()
 }
@@ -23,16 +30,26 @@ protocol ViewDataSource: AnyObject {
     func viewControllerNumberOfItems(_ view: ViewInterface) -> Int
     func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem
 }
-
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+enum ViewActions {
+    case chnageSortingOrder(order: Model.SortingOrder)
+    case clear, reload
+}
+#else
 protocol ViewDelegate: AnyObject {
     func viewController(_ view: ViewInterface, sortingOrderDidChange: Model.SortingOrder)
     func viewControllerDidRequestClear(_ view: ViewInterface)
     func viewControllerDidRequestReload(_ view: ViewInterface)
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
 class ViewController: UIViewController, ViewInterface {
     weak var dataSource: ViewDataSource?
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+    var actionEvent: AnyPublisher<ViewActions, Never> { actionSubject.eraseToAnyPublisher() }
+#else
     weak var delegate: ViewDelegate?
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
     var clearButtonEnabled: Bool {
         get { clearButton.isEnabled }
@@ -78,7 +95,11 @@ class ViewController: UIViewController, ViewInterface {
             UIAction(title: order.toString(), image: order.toImage(), handler: { [weak self] in
                 guard let self = self else { return }
 
+            #if USE_COMBINE_FOR_VIEW_ACTIONS
+                self.actionSubject.send(.chnageSortingOrder(order: order))
+            #else
                 self.delegate?.viewController(self, sortingOrderDidChange: order)
+            #endif // USE_COMBINE_FOR_VIEW_ACTIONS
                 self.sortingButton.setTitle($0.title, for: .normal)
                 self.sortingButton.setImage($0.image, for: .normal)
             })
@@ -97,15 +118,26 @@ class ViewController: UIViewController, ViewInterface {
     @IBOutlet private weak var titleLabel: UILabel!
 
     private var dataViewController: DataViewControllerInterface!
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+    private var actionSubject = PassthroughSubject<ViewActions, Never>()
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 }
 
 extension ViewController { // Actions
     @IBAction func onReloadButton(_ sender: UIButton) {
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        actionSubject.send(.reload)
+    #else
         delegate?.viewControllerDidRequestReload(self)
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
 
     @IBAction func onClearButton(_ sender: UIButton) {
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        actionSubject.send(.clear)
+    #else
         delegate?.viewControllerDidRequestClear(self)
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
 }
 

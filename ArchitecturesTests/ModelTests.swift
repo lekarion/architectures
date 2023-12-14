@@ -8,6 +8,41 @@
 import XCTest
 @testable import Architectures
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
+
+extension ArchitecturesTests {
+    func testMVVMModel() throws {
+        let model = Model.MVVM(with: modelDataProvider)
+
+        var cancellable: BindCancellable?
+        try baseModelProcessing(model: model) {
+            cancellable = model.structure.bind($0)
+        }
+
+        XCTAssertTrue(model.structure.isInUse)
+
+        cancellable?.cancel()
+        XCTAssertFalse(model.structure.isInUse)
+    }
+
+    func testMVVMViewModel() throws {
+        let viewModelHolder = ViewModelHolder(ViewModel.MVVM())
+
+        var cancellable: BindCancellable?
+        try baseViewModelProcessing(viewModel: viewModelHolder) {
+            cancellable = viewModelHolder.viewModel.structureBind.bind($0)
+        }
+
+        XCTAssertTrue(viewModelHolder.viewModel.structureBind.isInUse)
+
+        cancellable?.cancel()
+        XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
+    }
+}
+
+// MARK: - ### Reuse ### -
 extension ArchitecturesTests {
     func baseModelProcessing<T: ModelInterface>(model: T, ignoreFirst: Bool = false, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
         var callsCount = ignoreFirst ? -1 : 0
@@ -64,27 +99,14 @@ extension ArchitecturesTests {
         XCTAssertTrue(model.rawStructure.isEmpty)
     }
 
-    func testMVVMModel() throws {
-        let model = Model.MVVM(with: modelDataProvider)
-
-        var cancellable: BindCancellable?
-        try baseModelProcessing(model: model) {
-            cancellable = model.structure.bind($0)
-        }
-
-        XCTAssertTrue(model.structure.isInUse)
-
-        cancellable?.cancel()
-        XCTAssertFalse(model.structure.isInUse)
-    }
-
-    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: T, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
-        let effectiveIgnoreFirst = 0 > ignoreFirst ? 0 : -ignoreFirst
+    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
+        let effectiveIgnoreFirst = 0 >= ignoreFirst ? 0 : -ignoreFirst
 
         var callsCount = effectiveIgnoreFirst
         var lastCount = viewModel.rawStructure.count
 
         currentExpectation = XCTestExpectation(description: "Waiting for init")
+        currentExpectation?.isInverted = true
         bind { [weak self] value in
             callsCount += 1
 
@@ -130,17 +152,47 @@ extension ArchitecturesTests {
         XCTAssertEqual(lastCount, structure.count)
     }
 
-    func testMVVMViewModel() throws {
-        let viewModel = ViewModel.MVVM()
-
-        var cancellable: BindCancellable?
-        try baseViewModelProcessing(viewModel: viewModel) {
-            cancellable = viewModel.structure.bind($0)
+    class ViewModelHolder<T: ViewModelInterface>: ViewModelActionInterface {
+        init(_ viewModel: T) {
+            self.viewModel = viewModel
+        #if USE_COMBINE_FOR_VIEW_ACTIONS
+            viewModel.setup(with: self)
+        #endif // USE_COMBINE_FOR_VIEW_ACTIONS
         }
 
-        XCTAssertTrue(viewModel.structure.isInUse)
+        let viewModel: T
 
-        cancellable?.cancel()
-        XCTAssertFalse(viewModel.structure.isInUse)
+        var rawStructure: [VisualItem] { viewModel.structure }
+        var sortingOrder: Model.SortingOrder {
+            get { viewModel.sortingOrder }
+            set {
+                #if USE_COMBINE_FOR_VIEW_ACTIONS
+                    subject.send(.changeSortingOrder(order: newValue))
+                #else
+                    viewModel.sortingOrder = newValue
+                #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+            }
+        }
+
+        func reloadData() {
+        #if USE_COMBINE_FOR_VIEW_ACTIONS
+            subject.send(.reload)
+        #else
+            viewModel.reloadData()
+        #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+        }
+
+        func clearData() {
+        #if USE_COMBINE_FOR_VIEW_ACTIONS
+            subject.send(.clear)
+        #else
+            viewModel.clearData()
+        #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+        }
+
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        var actionEvent: AnyPublisher<ViewModelAction, Never> { subject.eraseToAnyPublisher() }
+        private let subject = PassthroughSubject<ViewModelAction, Never>()
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
 }

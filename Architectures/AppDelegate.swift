@@ -23,10 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private var dataProviders = [String: DataProviderInterface]()
+    private var settingsProviders = [String: SettingsProviderInterface]()
 }
 
 protocol AppCoordinator: AnyObject {
     func dataProvider(for identifier: String) -> DataProviderInterface
+    func settingsProvider(for identifier: String) -> SettingsProviderInterface
 }
 
 extension AppDelegate: AppCoordinator {
@@ -37,6 +39,17 @@ extension AppDelegate: AppCoordinator {
 
         let newProvider = ModelDataProvider(with: identifier)
         dataProviders[identifier] = newProvider
+
+        return newProvider
+    }
+
+    func settingsProvider(for identifier: String) -> SettingsProviderInterface {
+        if let provider = settingsProviders[identifier] {
+            return provider
+        }
+
+        let newProvider = SettingsDataProvider(with: identifier)
+        settingsProviders[identifier] = newProvider
 
         return newProvider
     }

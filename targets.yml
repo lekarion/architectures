@@ -77,11 +77,14 @@ targets:
     templates: [CommonTarget]
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.architectures
+#      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_COMBINE_FOR_VIEW_ACTIONS
 
   ArchitecturesTests:
     templates: [CommonTargetTests]
     dependencies:
       - target: Architectures
+#    settings:
+#      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_COMBINE_FOR_VIEW_ACTIONS
 
   ArchitecturesUITests:
     templates: [CommonTargetUITests]

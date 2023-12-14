@@ -10,7 +10,8 @@ import XCTest
 
 final class ArchitecturesTests: XCTestCase {
     override func setUpWithError() throws {
-        modelDataProvider = ModelDataProvider(with: "com.ArchitecturesTests")
+        modelDataProvider = ModelDataProvider(with: Self.identifier)
+        settingsDataProvider = SettingsDataProvider(with: Self.identifier)
     }
 
     override func tearDownWithError() throws {
@@ -79,6 +80,32 @@ final class ArchitecturesTests: XCTestCase {
         XCTAssertEqual(noneModifiedData.count, noneTestData.count)
     }
 
+    func testSettingsOperations() throws {
+        executeSync(description: "Wait for sortingOrder") {
+            self.settingsDataProvider.sortingOrder = .none
+            XCTAssertEqual(self.settingsDataProvider.sortingOrder, .none)
+
+            self.settingsDataProvider.sortingOrder = .ascending
+            XCTAssertEqual(self.settingsDataProvider.sortingOrder, .ascending)
+
+            let otherSettingsProvider = SettingsDataProvider(with: "com.otherTestSettings")
+            otherSettingsProvider.sortingOrder = .none
+
+            XCTAssertEqual(otherSettingsProvider.sortingOrder, .none)
+            XCTAssertNotEqual(otherSettingsProvider.sortingOrder, self.settingsDataProvider.sortingOrder)
+            XCTAssertEqual(self.settingsDataProvider.sortingOrder, .ascending)
+        }
+    }
+
+    func executeSync(description: String, closure: @escaping () -> Void) {
+        let expectation = XCTestExpectation(description: description)
+        executionQueue.async {
+            closure()
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
+    }
+
     struct TestDataItem: DataItemInterface {
         let iconName: String?
         let title: String
@@ -86,5 +113,10 @@ final class ArchitecturesTests: XCTestCase {
     }
 
     var modelDataProvider: DataProviderInterface!
+    var settingsDataProvider: SettingsDataProvider!
     var currentExpectation: XCTestExpectation?
+
+    let executionQueue = DispatchQueue(label: "com.architecturesTests.executionQueue", qos: .userInteractive)
+
+    static let identifier = "com.architecturesTests"
 }

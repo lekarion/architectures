@@ -5,6 +5,9 @@
 //  Created by developer on 08.12.2023.
 //
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+import Combine
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS
 import UIKit
 
 class MVVMViewController: UIViewController {
@@ -17,15 +20,20 @@ class MVVMViewController: UIViewController {
 
         viewInterface = interface
         viewInterface.dataSource = self
-        viewInterface.delegate = self
 
-        structureCancellable = viewModel.structure.bind { [weak self] _ in
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewModel.setup(with: self)
+    #else
+        viewInterface.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+
+        structureCancellable = viewModel.structureBind.bind { [weak self] _ in
             DispatchQueue.main.async {
                 self?.viewInterface.reloadData()
             }
         }
 
-        actionsCancellable = viewModel.availableActions.bind{ [weak self] actions in
+        actionsCancellable = viewModel.availableActionsBind.bind{ [weak self] actions in
             guard let self = self else { return }
 
             self.viewInterface.clearButtonEnabled = actions.contains(.clear)
@@ -33,11 +41,12 @@ class MVVMViewController: UIViewController {
             self.viewInterface.sortingOrderButtonEnabled = actions.contains(.changeSortingOrder)
         }
 
-        viewInterface.clearButtonEnabled = viewModel.availableActions.value.contains(.clear)
-        viewInterface.reloadButtonEnabled = viewModel.availableActions.value.contains(.reload)
-        viewInterface.sortingOrderButtonEnabled = viewModel.availableActions.value.contains(.changeSortingOrder)
+        viewInterface.clearButtonEnabled = viewModel.availableActionsBind.value.contains(.clear)
+        viewInterface.reloadButtonEnabled = viewModel.availableActionsBind.value.contains(.reload)
+        viewInterface.sortingOrderButtonEnabled = viewModel.availableActionsBind.value.contains(.changeSortingOrder)
 
         (viewInterface as? UIViewController)?.title = "MVVM"
+        viewInterface.sortingOrder = viewModel.sortingOrder
     }
 
     private let viewModel = ViewModel.MVVM()
@@ -49,14 +58,33 @@ class MVVMViewController: UIViewController {
 
 extension MVVMViewController: ViewDataSource {
     func viewControllerNumberOfItems(_ view: ViewInterface) -> Int {
-        viewModel.structure.value.count
+        viewModel.structure.count
     }
 
     func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
-        viewModel.structure.value[index]
+        viewModel.structure[index]
     }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+extension MVVMViewController: ViewModelActionInterface {
+    var actionEvent: AnyPublisher<ViewModelAction, Never> {
+        viewInterface.actionEvent.map {
+            let action: ViewModelAction
+            switch $0 {
+            case .chnageSortingOrder(let order):
+                action = .changeSortingOrder(order: order)
+            case .clear:
+                action = .clear
+            case .reload:
+                action = .reload
+            }
+
+            return action
+        }.eraseToAnyPublisher()
+    }
+}
+#else
 extension MVVMViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         viewModel.sortingOrder = order
@@ -70,3 +98,4 @@ extension MVVMViewController: ViewDelegate {
         viewModel.reloadData()
     }
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS

@@ -26,8 +26,14 @@ extension ArchitecturesTests {
     func testMVVMViewModelCombine() throws {
         let viewModelHolder = ViewModelHolder(ViewModel.MVVMCombine())
 
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        let countOfInitCalls = 2
+    #else
+        let countOfInitCalls = 1
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+
         var cancellable: AnyCancellable?
-        try baseViewModelProcessing(viewModel: viewModelHolder, ignoreFirst: 2) { handler in
+        try baseViewModelProcessing(viewModel: viewModelHolder, ignoreFirst: countOfInitCalls) { handler in
             cancellable = viewModelHolder.viewModel.structure.sink {
                 handler($0)
             }

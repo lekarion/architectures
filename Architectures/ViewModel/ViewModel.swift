@@ -54,6 +54,9 @@ enum ViewModelAction {
     case clear, reload
 }
 #else
+protocol ViewModelActionInterface: AnyObject { // dummy
+}
+
 protocol ViewModelInterface: AnyObject {
     var rawStructure: [VisualItem] { get }
     var sortingOrder: Model.SortingOrder { get set }

@@ -100,12 +100,13 @@ extension ArchitecturesTests {
     }
 
     func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
-        let effectiveIgnoreFirst = 0 > ignoreFirst ? 0 : -ignoreFirst
+        let effectiveIgnoreFirst = 0 >= ignoreFirst ? 0 : -ignoreFirst
 
         var callsCount = effectiveIgnoreFirst
         var lastCount = viewModel.rawStructure.count
 
         currentExpectation = XCTestExpectation(description: "Waiting for init")
+        currentExpectation?.isInverted = true
         bind { [weak self] value in
             callsCount += 1
 

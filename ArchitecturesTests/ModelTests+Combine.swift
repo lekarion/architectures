@@ -27,7 +27,7 @@ extension ArchitecturesTests {
         let viewModelHolder = ViewModelHolder(ViewModel.MVVMCombine())
 
         var cancellable: AnyCancellable?
-        try baseViewModelProcessing(viewModel: viewModelHolder, ignoreFirst: 0) { handler in
+        try baseViewModelProcessing(viewModel: viewModelHolder) { handler in
             cancellable = viewModelHolder.viewModel.structureBind.sink {
                 handler($0)
             }

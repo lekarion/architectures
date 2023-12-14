@@ -39,6 +39,8 @@ extension ViewModel {
                     self.model.reload()
                 }
             }.store(in: &bag)
+
+            availableActionsSubject.send(Self.availableActions(for: structure))
         }
     #else
         var sortingOrder: Model.SortingOrder {

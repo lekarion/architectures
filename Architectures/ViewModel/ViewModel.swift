@@ -39,7 +39,7 @@ extension ModelItem {
 
 #if USE_COMBINE_FOR_VIEW_ACTIONS
 protocol ViewModelInterface: AnyObject {
-    var rawStructure: [VisualItem] { get }
+    var structure: [VisualItem] { get }
     var sortingOrder: Model.SortingOrder { get }
 
     func setup(with actionInterface: ViewModelActionInterface)

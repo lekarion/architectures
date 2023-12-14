@@ -31,6 +31,7 @@ extension ViewModel {
                 switch $0 {
                 case .changeSortingOrder(let order):
                     self.model.sortingOrder = order
+                    self.settings?.sortingOrder = order.toSortingOrder()
 
                     guard !self.model.structure.value.isEmpty else { break }
                     self.model.reload()
@@ -46,6 +47,7 @@ extension ViewModel {
             get { model.sortingOrder }
             set {
                 model.sortingOrder = newValue
+                settings?.sortingOrder = newValue.toSortingOrder()
 
                 guard !model.structure.value.isEmpty else { return }
                 model.reload()
@@ -66,7 +68,11 @@ extension ViewModel {
                 fatalError("Invalid app state")
             }
 
+            settings = appCoordinator.settingsProvider(for: "com.mvvm.settings")
+
             model = Model.MVVM(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
+            model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
+
             structure = GenericBind(value: Self.emptyStructure + model.structure.value.compactMap { $0.toVisualItem() })
             availableActions = GenericBind(value: Self.availableActions(for: structure.value))
 
@@ -85,6 +91,7 @@ extension ViewModel {
             modelCancellable?.cancel()
         }
 
+        private let settings: SettingsProviderInterface?
         private let model: Model.MVVM
         private var modelCancellable: BindCancellable?
     #if USE_COMBINE_FOR_VIEW_ACTIONS

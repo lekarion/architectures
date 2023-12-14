@@ -29,6 +29,7 @@ extension ViewModel {
                 switch $0 {
                 case .changeSortingOrder(let order):
                     self.model.sortingOrder = order
+                    self.settings?.sortingOrder = order.toSortingOrder()
 
                     guard !self.model.structure.value.isEmpty else { break }
                     self.model.reload()
@@ -44,6 +45,7 @@ extension ViewModel {
             get { model.sortingOrder }
             set {
                 model.sortingOrder = newValue
+                settings?.sortingOrder = newValue.toSortingOrder()
 
                 guard !model.structure.value.isEmpty else { return }
                 model.reload()
@@ -64,7 +66,10 @@ extension ViewModel {
                 fatalError("Invalid app state")
             }
 
+            settings = appCoordinator.settingsProvider(for: "com.mvvm.combine.settings")
+
             model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
+            model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             model.structure.receive(on: workQueue).sink { [weak self] value in
                 guard let self = self else { return }
@@ -79,6 +84,7 @@ extension ViewModel {
             bag.forEach { $0.cancel() }
         }
 
+        private let settings: SettingsProviderInterface?
         private let model: Model.MVVMCombine
         private let workQueue = DispatchQueue(label: "com.developer.viewModelQueue", qos: .default)
 

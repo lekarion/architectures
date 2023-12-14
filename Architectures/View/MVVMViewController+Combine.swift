@@ -19,6 +19,7 @@ class MVVMCombineViewController: UIViewController {
         viewInterface = interface
         viewInterface.dataSource = self
     #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewModel.setup(with: self)
     #else
         viewInterface.delegate = self
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
@@ -32,6 +33,7 @@ class MVVMCombineViewController: UIViewController {
         viewModel.availableActions.receive(on: DispatchQueue.main).map { $0.contains(.changeSortingOrder) }.assign(to: \.sortingOrderButtonEnabled, on: viewInterface).store(in: &bag)
 
         (viewInterface as? UIViewController)?.title = "MVVM + Combine"
+        viewInterface.sortingOrder = viewModel.sortingOrder
     }
 
     private let viewModel = ViewModel.MVVMCombine()

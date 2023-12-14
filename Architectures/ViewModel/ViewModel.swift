@@ -119,3 +119,27 @@ extension DetailsItem {
         "DetailsItem - \(title) - \(description ?? "nil") - \(icon?.size ?? .zero)"
     }
 }
+
+extension Model.SortingOrder {
+    func toSortingOrder() -> SortingOrder {
+        switch self {
+        case .none:
+            return .none
+        case .ascending:
+            return .ascending
+        case .descending:
+            return .descending
+        }
+    }
+
+    init(with order: SortingOrder) {
+        switch order {
+        case .none:
+            self = .none
+        case .ascending:
+            self = .ascending
+        case .descending:
+            self = .descending
+        }
+    }
+}

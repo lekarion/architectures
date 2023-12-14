@@ -31,16 +31,15 @@ class SettingsDataProvider: SettingsProviderInterface {
     }
 
     private func safe(sync: Bool = false, handler: @escaping () -> Void) {
-        let queue = DispatchQueue.main
-
         if sync {
-            queue.sync { handler() }
+            workQueue.sync { handler() }
         } else {
-            queue.async { handler() }
+            workQueue.async { handler() }
         }
     }
 
     private let identifier: String
+    private let workQueue = DispatchQueue(label: "com.settingsDataProvider.queue", qos: .utility)
 }
 
 private extension SettingsDataProvider {

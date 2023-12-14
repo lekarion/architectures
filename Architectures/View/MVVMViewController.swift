@@ -22,6 +22,7 @@ class MVVMViewController: UIViewController {
         viewInterface.dataSource = self
 
     #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewModel.setup(with: self)
     #else
         viewInterface.delegate = self
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
@@ -45,6 +46,7 @@ class MVVMViewController: UIViewController {
         viewInterface.sortingOrderButtonEnabled = viewModel.availableActions.value.contains(.changeSortingOrder)
 
         (viewInterface as? UIViewController)?.title = "MVVM"
+        viewInterface.sortingOrder = viewModel.sortingOrder
     }
 
     private let viewModel = ViewModel.MVVM()

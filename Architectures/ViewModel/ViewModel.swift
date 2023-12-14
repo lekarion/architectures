@@ -58,7 +58,7 @@ protocol ViewModelActionInterface: AnyObject { // dummy
 }
 
 protocol ViewModelInterface: AnyObject {
-    var rawStructure: [VisualItem] { get }
+    var structure: [VisualItem] { get }
     var sortingOrder: Model.SortingOrder { get set }
 
     func reloadData()

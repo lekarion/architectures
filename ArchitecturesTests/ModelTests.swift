@@ -32,13 +32,13 @@ extension ArchitecturesTests {
 
         var cancellable: BindCancellable?
         try baseViewModelProcessing(viewModel: viewModelHolder) {
-            cancellable = viewModelHolder.viewModel.structure.bind($0)
+            cancellable = viewModelHolder.viewModel.structureBind.bind($0)
         }
 
-        XCTAssertTrue(viewModelHolder.viewModel.structure.isInUse)
+        XCTAssertTrue(viewModelHolder.viewModel.structureBind.isInUse)
 
         cancellable?.cancel()
-        XCTAssertFalse(viewModelHolder.viewModel.structure.isInUse)
+        XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
     }
 }
 
@@ -161,7 +161,7 @@ extension ArchitecturesTests {
 
         let viewModel: T
 
-        var rawStructure: [VisualItem] { viewModel.rawStructure }
+        var rawStructure: [VisualItem] { viewModel.structure }
         var sortingOrder: Model.SortingOrder {
             get { viewModel.sortingOrder }
             set {

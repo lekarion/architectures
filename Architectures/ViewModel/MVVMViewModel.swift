@@ -12,14 +12,14 @@ import Foundation
 import UIKit.UIImage
 
 protocol MVVMViewModelInterface: ViewModelInterface {
-    var structure: GenericBind<[VisualItem]> { get }
-    var availableActions: GenericBind<ViewModel.Actions> { get }
+    var structureBind: GenericBind<[VisualItem]> { get }
+    var availableActionsBind: GenericBind<ViewModel.Actions> { get }
 }
 
 extension ViewModel {
     class MVVM: MVVMViewModelInterface {
-        let structure: GenericBind<[VisualItem]>
-        let availableActions: GenericBind<ViewModel.Actions>
+        let structureBind: GenericBind<[VisualItem]>
+        let availableActionsBind: GenericBind<ViewModel.Actions>
 
     #if USE_COMBINE_FOR_VIEW_ACTIONS
         var sortingOrder: Model.SortingOrder { model.sortingOrder }
@@ -73,16 +73,16 @@ extension ViewModel {
             model = Model.MVVM(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
-            structure = GenericBind(value: Self.emptyStructure + model.structure.value.compactMap { $0.toVisualItem() })
-            availableActions = GenericBind(value: Self.availableActions(for: structure.value))
+            structureBind = GenericBind(value: Self.emptyStructure + model.structure.value.compactMap { $0.toVisualItem() })
+            availableActionsBind = GenericBind(value: Self.availableActions(for: structureBind.value))
 
             modelCancellable = model.structure.bind { [weak self] structure in
                 guard let self = self else { return }
 
                 let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
                 DispatchQueue.main.async {
-                    self.structure.value = newStucture
-                    self.availableActions.value = Self.availableActions(for: self.structure.value)
+                    self.structureBind.value = newStucture
+                    self.availableActionsBind.value = Self.availableActions(for: self.structureBind.value)
                 }
             }
         }
@@ -108,5 +108,5 @@ private extension ViewModel.MVVM {
 }
 
 extension MVVMViewModelInterface {
-    var rawStructure: [VisualItem] { structure.value }
+    var structure: [VisualItem] { structureBind.value }
 }

@@ -1,5 +1,7 @@
 # Architectures
-Samples of implementation some **MV*** patterns in Swift. 
+Samples of implementation some **MV*** patterns in Swift. The implementation is divided to two main blocks:
+1. **Plain**, where all features, maybe except experimental ones, are implemented without using the `Combine` framework
+2. **Combine**, which contains various thinngs based on the `Combine` API
 
 ### Tools & environment
 - Xcode 15.0 or later

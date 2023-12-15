@@ -14,8 +14,8 @@ extension ArchitecturesTests {
         let model = Model.MVVMCombine(with: modelDataProvider)
 
         var cancellable: AnyCancellable?
-        try baseModelProcessing(model: model, ignoreFirst: true) { handler in
-            cancellable = model.structure.sink {
+        try baseModelProcessing(model: model) { handler in
+            cancellable = model.structureBind.sink {
                 handler($0)
             }
         }
@@ -29,6 +29,21 @@ extension ArchitecturesTests {
         var cancellable: AnyCancellable?
         try baseViewModelProcessing(viewModel: viewModelHolder) { handler in
             cancellable = viewModelHolder.viewModel.structureBind.sink {
+                handler($0)
+            }
+        }
+
+        cancellable?.cancel()
+    }
+}
+
+extension ArchitecturesTests {
+    func testMVPModelCombine() throws {
+        let model = Model.MVPCombine(with: modelDataProvider)
+
+        var cancellable: AnyCancellable?
+        try baseModelProcessing(model: model) { handler in
+            cancellable = model.structureBind.sink {
                 handler($0)
             }
         }

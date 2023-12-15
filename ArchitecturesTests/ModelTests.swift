@@ -18,13 +18,13 @@ extension ArchitecturesTests {
 
         var cancellable: BindCancellable?
         try baseModelProcessing(model: model) {
-            cancellable = model.structure.bind($0)
+            cancellable = model.structureBind.bind($0)
         }
 
-        XCTAssertTrue(model.structure.isInUse)
+        XCTAssertTrue(model.structureBind.isInUse)
 
         cancellable?.cancel()
-        XCTAssertFalse(model.structure.isInUse)
+        XCTAssertFalse(model.structureBind.isInUse)
     }
 
     func testMVVMViewModel() throws {
@@ -42,17 +42,30 @@ extension ArchitecturesTests {
     }
 }
 
+extension ArchitecturesTests {
+    func testMVPModel() throws {
+        let model = Model.MVP(with: modelDataProvider)
+
+        var cancellable: BindCancellable?
+        try baseModelProcessing(model: model) {
+            cancellable = model.structureBind.bind($0)
+        }
+
+        XCTAssertTrue(model.structureBind.isInUse)
+
+        cancellable?.cancel()
+        XCTAssertFalse(model.structureBind.isInUse)
+    }
+}
+
 // MARK: - ### Reuse ### -
 extension ArchitecturesTests {
-    func baseModelProcessing<T: ModelInterface>(model: T, ignoreFirst: Bool = false, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
-        var callsCount = ignoreFirst ? -1 : 0
-        var lastCount = model.rawStructure.count
+    func baseModelProcessing<T: ModelInterface>(model: T, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
+        var callsCount = 0
+        var lastCount = model.structure.count
 
         bind { value in
             callsCount += 1
-
-            guard callsCount > 0 else { return }
-
             lastCount = value.count
         }
 
@@ -64,7 +77,7 @@ extension ArchitecturesTests {
 
         step += 1
         model.reload()
-        let noneStructure = model.rawStructure.map { $0.testDescription() }
+        let noneStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertNotEqual(lastCount, 0)
@@ -75,7 +88,7 @@ extension ArchitecturesTests {
         XCTAssertEqual(callsCount + 1, step)
 
         model.reload()
-        let ascendingStructure = model.rawStructure.map { $0.testDescription() }
+        let ascendingStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(noneStructure.count, ascendingStructure.count)
@@ -84,7 +97,7 @@ extension ArchitecturesTests {
         step += 1
         model.sortingOrder = .descending
         model.reload()
-        let descendingStructure = model.rawStructure.map { $0.testDescription() }
+        let descendingStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(ascendingStructure.count, descendingStructure.count)
@@ -96,28 +109,18 @@ extension ArchitecturesTests {
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, 0)
-        XCTAssertTrue(model.rawStructure.isEmpty)
+        XCTAssertTrue(model.structure.isEmpty)
     }
 
-    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
-        let effectiveIgnoreFirst = 0 >= ignoreFirst ? 0 : -ignoreFirst
-
-        var callsCount = effectiveIgnoreFirst
+    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
+        var callsCount = 0
         var lastCount = viewModel.rawStructure.count
 
         currentExpectation = XCTestExpectation(description: "Waiting for init")
-        currentExpectation?.isInverted = true
         bind { [weak self] value in
             callsCount += 1
-
-            guard callsCount >= 0 else { return }
-
             lastCount = value.count
             self?.currentExpectation?.fulfill()
-        }
-
-        if 0 != effectiveIgnoreFirst {
-            wait(for: [currentExpectation!], timeout: 5.0)
         }
 
         var step = 0

@@ -9,12 +9,17 @@ import Combine
 import Foundation
 
 protocol MVVMModelCombineInterface: ModelInterface {
-    var structure: CurrentValueSubject<[ModelItem], Never> { get }
+    var structureBind: AnyPublisher<[ModelItem], Never> { get }
 }
 
 extension Model {
     class MVVMCombine: MVVMModelCombineInterface {
-        let structure = CurrentValueSubject<[ModelItem], Never>([])
+        var structureBind: AnyPublisher<[ModelItem], Never> { structureSubject.eraseToAnyPublisher() }
+        private(set) var structure = [ModelItem]() {
+            didSet {
+                structureSubject.send(structure)
+            }
+        }
 
         var sortingOrder: Model.SortingOrder = .none {
             didSet {
@@ -26,16 +31,16 @@ extension Model {
         }
 
         func clear() {
-            guard !structure.value.isEmpty else { return }
+            guard !structure.isEmpty else { return }
 
-            structure.value = []
+            structure = []
             loaded = false
         }
 
         func reload() {
             guard !loaded else { return }
 
-            structure.value = dataProvider.reload().map {
+            structure = dataProvider.reload().map {
                 InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.title.localized, description: $0.description?.localized))
             }
             loaded = true
@@ -45,11 +50,8 @@ extension Model {
             self.dataProvider = dataProvider
         }
 
+        private let structureSubject = PassthroughSubject<[ModelItem], Never>()
         private let dataProvider: DataProviderInterface
         private var loaded = false
     }
-}
-
-extension MVVMModelCombineInterface {
-    var structure: [ModelItem] { structure.value }
 }

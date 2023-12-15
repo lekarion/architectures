@@ -49,7 +49,7 @@ extension ViewModel {
                 model.sortingOrder = newValue
                 settings?.sortingOrder = newValue.toSortingOrder()
 
-                guard !model.structure.value.isEmpty else { return }
+                guard !model.structure.isEmpty else { return }
                 model.reload()
             }
         }
@@ -73,7 +73,7 @@ extension ViewModel {
             model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
-            model.structure.receive(on: workQueue).sink { [weak self] value in
+            model.structureBind.receive(on: workQueue).sink { [weak self] value in
                 guard let self = self else { return }
 
                 let visualValue = value.compactMap({ $0.toVisualItem() })
@@ -89,7 +89,7 @@ extension ViewModel {
             bag.forEach { $0.cancel() }
         }
 
-        private(set) var structure = [VisualItem]()
+        private(set) var structure: [VisualItem] = emptyStructure
         private let structureSubject = PassthroughSubject<[VisualItem], Never>()
         private let availableActionsSubject = PassthroughSubject<ViewModel.Actions, Never>()
 

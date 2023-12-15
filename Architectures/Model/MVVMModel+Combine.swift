@@ -51,5 +51,5 @@ extension Model {
 }
 
 extension MVVMModelCombineInterface {
-    var rawStructure: [ModelItem] { structure.value }
+    var structure: [ModelItem] { structure.value }
 }

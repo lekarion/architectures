@@ -8,12 +8,12 @@
 import Foundation
 
 protocol MVVMModelInterface: ModelInterface {
-    var structure: GenericBind<[ModelItem]> { get }
+    var structureBind: GenericBind<[ModelItem]> { get }
 }
 
 extension Model {
     class MVVM: MVVMModelInterface {
-        let structure = GenericBind(value: [ModelItem]())
+        let structureBind = GenericBind(value: [ModelItem]())
 
         var sortingOrder: Model.SortingOrder = .none {
             didSet {
@@ -25,16 +25,16 @@ extension Model {
         }
 
         func clear() {
-            guard !structure.value.isEmpty else { return }
+            guard !structureBind.value.isEmpty else { return }
 
-            structure.value = []
+            structureBind.value = []
             loaded = false
         }
 
         func reload() {
             guard !loaded else { return }
 
-            structure.value = dataProvider.reload().map {
+            structureBind.value = dataProvider.reload().map {
                 InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.title.localized, description: $0.description?.localized))
             }
             loaded = true
@@ -50,5 +50,5 @@ extension Model {
 }
 
 extension MVVMModelInterface {
-    var rawStructure: [ModelItem] { structure.value }
+    var structure: [ModelItem] { structureBind.value }
 }

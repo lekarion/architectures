@@ -49,7 +49,7 @@ extension ViewModel {
                 model.sortingOrder = newValue
                 settings?.sortingOrder = newValue.toSortingOrder()
 
-                guard !model.structure.value.isEmpty else { return }
+                guard !model.structure.isEmpty else { return }
                 model.reload()
             }
         }
@@ -73,10 +73,10 @@ extension ViewModel {
             model = Model.MVVM(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
-            structureBind = GenericBind(value: Self.emptyStructure + model.structure.value.compactMap { $0.toVisualItem() })
+            structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })
             availableActionsBind = GenericBind(value: Self.availableActions(for: structureBind.value))
 
-            modelCancellable = model.structure.bind { [weak self] structure in
+            modelCancellable = model.structureBind.bind { [weak self] structure in
                 guard let self = self else { return }
 
                 let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }

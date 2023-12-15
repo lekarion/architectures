@@ -39,8 +39,6 @@ extension ViewModel {
                     self.model.reload()
                 }
             }.store(in: &bag)
-
-            availableActionsSubject.send(Self.availableActions(for: structure))
         }
     #else
         var sortingOrder: Model.SortingOrder {
@@ -63,6 +61,10 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
+        func viewDidLoad() {
+            availableActionsSubject.send(Self.availableActions(for: structure))
+        }
+
         init() {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")
@@ -70,7 +72,7 @@ extension ViewModel {
 
             settings = appCoordinator.settingsProvider(for: "com.mvvm.combine.settings")
 
-            model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
+            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             model.structureBind.receive(on: workQueue).sink { [weak self] value in
@@ -94,7 +96,7 @@ extension ViewModel {
         private let availableActionsSubject = PassthroughSubject<ViewModel.Actions, Never>()
 
         private let settings: SettingsProviderInterface?
-        private let model: Model.MVVMCombine
+        private let model: Model.CombineModel
         private let workQueue = DispatchQueue(label: "com.developer.viewModelQueue", qos: .default)
 
         private var bag = Set<AnyCancellable>()

@@ -10,8 +10,8 @@ import XCTest
 @testable import Architectures
 
 extension ArchitecturesTests {
-    func testMVVMModelCombine() throws {
-        let model = Model.MVVMCombine(with: modelDataProvider)
+    func testCombineModel() throws {
+        let model = Model.CombineModel(with: modelDataProvider)
 
         var cancellable: AnyCancellable?
         try baseModelProcessing(model: model) { handler in
@@ -29,21 +29,6 @@ extension ArchitecturesTests {
         var cancellable: AnyCancellable?
         try baseViewModelProcessing(viewModel: viewModelHolder) { handler in
             cancellable = viewModelHolder.viewModel.structureBind.sink {
-                handler($0)
-            }
-        }
-
-        cancellable?.cancel()
-    }
-}
-
-extension ArchitecturesTests {
-    func testMVPModelCombine() throws {
-        let model = Model.MVPCombine(with: modelDataProvider)
-
-        var cancellable: AnyCancellable?
-        try baseModelProcessing(model: model) { handler in
-            cancellable = model.structureBind.sink {
                 handler($0)
             }
         }

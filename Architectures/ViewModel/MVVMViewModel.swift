@@ -70,7 +70,7 @@ extension ViewModel {
 
             settings = appCoordinator.settingsProvider(for: "com.mvvm.settings")
 
-            model = Model.MVVM(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })
@@ -92,7 +92,7 @@ extension ViewModel {
         }
 
         private let settings: SettingsProviderInterface?
-        private let model: Model.MVVM
+        private let model: Model.PlainModel
         private var modelCancellable: BindCancellable?
     #if USE_COMBINE_FOR_VIEW_ACTIONS
         private var bag = Set<AnyCancellable>()

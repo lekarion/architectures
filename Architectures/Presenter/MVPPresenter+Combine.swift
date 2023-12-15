@@ -22,13 +22,13 @@ extension Presenter {
 
             settings = appCoordinator.settingsProvider(for: "com.mvp.combine.settings")
 
-            model = Model.MVPCombine(with: appCoordinator.dataProvider(for: "com.mvp.combine.data"))
+            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "com.mvp.combine.data"))
             model.sortingOrder = Model.SortingOrder(with: settings.sortingOrder)
 
             structure = model.structure.compactMap { $0.toVisualItem() }
         }
 
         private let settings: SettingsProviderInterface
-        private let model: Model.MVPCombine
+        private let model: Model.CombineModel
     }
 }

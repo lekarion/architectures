@@ -20,13 +20,13 @@ extension Presenter {
 
             settings = appCoordinator.settingsProvider(for: "com.mvp.settings")
 
-            model = Model.MVP(with: appCoordinator.dataProvider(for: "com.mvp.data"))
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "com.mvp.data"))
             model.sortingOrder = Model.SortingOrder(with: settings.sortingOrder)
 
             structure = model.structure.compactMap { $0.toVisualItem() }
         }
 
         private let settings: SettingsProviderInterface
-        private let model: Model.MVP
+        private let model: Model.PlainModel
     }
 }

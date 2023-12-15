@@ -13,8 +13,8 @@ import Combine
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
 extension ArchitecturesTests {
-    func testMVVMModel() throws {
-        let model = Model.MVVM(with: modelDataProvider)
+    func testPlainModel() throws {
+        let model = Model.PlainModel(with: modelDataProvider)
 
         var cancellable: BindCancellable?
         try baseModelProcessing(model: model) {
@@ -39,22 +39,6 @@ extension ArchitecturesTests {
 
         cancellable?.cancel()
         XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
-    }
-}
-
-extension ArchitecturesTests {
-    func testMVPModel() throws {
-        let model = Model.MVP(with: modelDataProvider)
-
-        var cancellable: BindCancellable?
-        try baseModelProcessing(model: model) {
-            cancellable = model.structureBind.bind($0)
-        }
-
-        XCTAssertTrue(model.structureBind.isInUse)
-
-        cancellable?.cancel()
-        XCTAssertFalse(model.structureBind.isInUse)
     }
 }
 

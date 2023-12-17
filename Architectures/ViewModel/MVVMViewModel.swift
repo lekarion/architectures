@@ -63,14 +63,16 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
-        init() {
+        init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")
             }
 
-            settings = appCoordinator.settingsProvider(for: "com.mvvm.settings")
+            let baseIdentifier = identifier ?? "com.mvvm"
 
-            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
+            settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
+
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })

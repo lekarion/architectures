@@ -65,14 +65,16 @@ extension ViewModel {
             availableActionsSubject.send(Self.availableActions(for: structure))
         }
 
-        init() {
+        init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")
             }
 
-            settings = appCoordinator.settingsProvider(for: "com.mvvm.combine.settings")
+            let baseIdentifier = identifier ?? "com.mvvm.combine"
 
-            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
+            settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
+
+            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             model.structureBind.receive(on: workQueue).sink { [weak self] value in

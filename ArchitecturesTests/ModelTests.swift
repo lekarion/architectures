@@ -28,7 +28,7 @@ extension ArchitecturesTests {
     }
 
     func testMVVMViewModel() throws {
-        let viewModelHolder = ViewModelHolder(ViewModel.MVVM())
+        let viewModelHolder = ViewModelHolder(ViewModel.MVVM(Self.identifier))
 
         var cancellable: BindCancellable?
         try baseViewModelProcessing(viewModel: viewModelHolder) {
@@ -39,6 +39,16 @@ extension ArchitecturesTests {
 
         cancellable?.cancel()
         XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
+    }
+
+    func testMVPViewModel() throws {
+        let model = Model.PlainModel(with: modelDataProvider)
+        let view = TestMVPView()
+        let presenter = Presenter.MVP(Self.identifier)
+
+        presenter.setup(with: model, view: view)
+
+        view.start()
     }
 }
 
@@ -181,5 +191,27 @@ extension ArchitecturesTests {
         var actionEvent: AnyPublisher<ViewModelAction, Never> { subject.eraseToAnyPublisher() }
         private let subject = PassthroughSubject<ViewModelAction, Never>()
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+    }
+
+    class TestMVPView: PresenterViewInterface {
+        weak var presenter: PresenterInterface?
+
+        func handle(update: Presenter.Update) {
+            switch update {
+            case .structure:
+                itemsCount = presenter?.structure.count ?? 0
+            case .availableActions:
+                isAllactions = presenter?.availableActions == Presenter.Actions.all
+            }
+        }
+        
+        func start() {
+            XCTAssertNotNil(presenter)
+            XCTAssertNotEqual(itemsCount, 0)
+            XCTAssertFalse(isAllactions)
+        }
+
+        private var itemsCount: Int = 0
+        private var isAllactions = false
     }
 }

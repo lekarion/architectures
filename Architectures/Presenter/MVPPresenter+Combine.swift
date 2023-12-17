@@ -15,6 +15,17 @@ extension Presenter {
         var sortingOrder: Model.SortingOrder { model.sortingOrder }
         private(set) var availableActions: Presenter.Actions = []
 
+        func handle(action: Presenter.Action) {
+//            switch action {
+//            case .changeSortingOrder(let order):
+//                sortingOrder = order
+//            case .clear:
+//                model?.clear()
+//            case .reload:
+//                model?.reload()
+//            }
+        }
+
         init() {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")

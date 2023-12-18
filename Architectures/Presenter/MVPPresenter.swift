@@ -32,10 +32,15 @@ extension Presenter {
         func handle(action: Presenter.Action) {
             switch action {
             case .changeSortingOrder(let order):
+                guard availableActions.contains(.changeSortingOrder) else { break }
+
                 sortingOrder = order
+                model?.reload()
             case .clear:
+                guard availableActions.contains(.clear) else { break }
                 model?.clear()
             case .reload:
+                guard availableActions.contains(.reload) else { break }
                 model?.reload()
             }
         }
@@ -66,6 +71,7 @@ extension Presenter {
             self.view?.presenter = self
 
             self.structure = Self.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
+            self.availableActions = Self.availableActions(for: self.structure)
         }
 
         init(_ identifier: String? = nil) {

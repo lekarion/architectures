@@ -26,6 +26,19 @@ class TableViewController: UITableViewController {
             let presenter = Presenter.MVP()
 
             presenter.setup(with: model, view: view)
+        case Self.combineMVPSegueIdentifier:
+            guard let view = segue.destination as? CombinePresenterViewInterface else {
+                fatalError("Invalid app state")
+            }
+
+            guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
+                fatalError("Invalid app state")
+            }
+
+            let model = Model.CombineModel(with: appCoordinator.dataProvider(for: "com.mvp.data"))
+            let presenter = Presenter.MVPCombine()
+
+            presenter.setup(with: model, view: view)
         default:
             break
         }

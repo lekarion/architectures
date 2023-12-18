@@ -35,6 +35,8 @@ extension Presenter {
                 guard availableActions.contains(.changeSortingOrder) else { break }
 
                 sortingOrder = order
+                settings.sortingOrder = order.toSortingOrder()
+
                 model?.reload()
             case .clear:
                 guard availableActions.contains(.clear) else { break }

@@ -57,6 +57,10 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
 
         return cell
     }
+
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        !(dataSource?.dataTableViewController(self, itemAt: indexPath.row) is SchemeItem)
+    }
 }
 
 extension DataTableViewController {

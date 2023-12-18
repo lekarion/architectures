@@ -42,7 +42,8 @@ extension Presenter {
         var availableActionsBind: AnyPublisher<Presenter.Actions, Never> { availableActionsSubject.eraseToAnyPublisher() }
 
         func viewDidLoad() {
-            availableActions = Self.availableActions(for: structure)
+            structureSubject.send(structure)
+            availableActionsSubject.send(availableActions)
         }
 
         func setup(with model: CombineModelInterface, view: CombinePresenterViewInterface) {
@@ -55,14 +56,9 @@ extension Presenter {
             self.model?.structureBind.receive(on: DispatchQueue.main).sink { [weak self] structure in
                 guard let self = self else { return }
 
-                let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
-            #if USE_BINDING_FOR_PALIN_MVP
-                self.structureBind.value = newStucture
-                self.availableActionsBind.value = Self.availableActions(for: self.structureBind.value)
-            #else
+                let newStucture = Presenter.emptyStructure + structure.compactMap { $0.toVisualItem() }
                 self.structure = newStucture
-                self.availableActions = Self.availableActions(for: newStucture)
-            #endif // USE_BINDING_FOR_PALIN_MVP
+                self.availableActions = Presenter.availableActions(for: newStucture)
             }.store(in: &bag)
 
             self.view?.presenter = self
@@ -86,8 +82,8 @@ extension Presenter {
                 }
             }.store(in: &bag)
 
-            self.structure = Self.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
-            self.availableActions = Self.availableActions(for: self.structure)
+            self.structure = Presenter.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
+            self.availableActions = Presenter.availableActions(for: self.structure)
         }
 
         init(_ identifier: String? = nil) {
@@ -98,7 +94,7 @@ extension Presenter {
             let baseIdentifier = identifier ?? "com.mvp.combine"
 
             settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
-            structure = Self.emptyStructure
+            structure = Presenter.emptyStructure
         }
 
         private let settings: SettingsProviderInterface
@@ -109,12 +105,5 @@ extension Presenter {
 
         private let structureSubject = PassthroughSubject<[VisualItem], Never>()
         private let availableActionsSubject = PassthroughSubject<Presenter.Actions, Never>()
-    }
-}
-
-private extension Presenter.MVPCombine {
-    static let emptyStructure = [Presenter.Scheme("Schemes/mvp-scheme")]
-    static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
-        (emptyStructure.count == structure.count) ? .reload : .all
     }
 }

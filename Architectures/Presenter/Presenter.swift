@@ -34,3 +34,10 @@ class Presenter {
         case structure, availableActions
     }
 }
+
+extension Presenter {
+    static let emptyStructure = [Presenter.Scheme("Schemes/mvp-scheme")]
+    static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
+        (emptyStructure.count == structure.count) ? .reload : .all
+    }
+}

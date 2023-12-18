@@ -58,22 +58,22 @@ extension Presenter {
             self.modelCancellable = self.model?.structureBind.bind { [weak self] structure in
                 guard let self = self else { return }
 
-                let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
+                let newStucture = Presenter.emptyStructure + structure.compactMap { $0.toVisualItem() }
                 DispatchQueue.main.async {
                 #if USE_BINDING_FOR_PALIN_MVP
                     self.structureBind.value = newStucture
                     self.availableActionsBind.value = Self.availableActions(for: self.structureBind.value)
                 #else
                     self.structure = newStucture
-                    self.availableActions = Self.availableActions(for: newStucture)
+                    self.availableActions = Presenter.availableActions(for: newStucture)
                 #endif // USE_BINDING_FOR_PALIN_MVP
                 }
             }
 
             self.view?.presenter = self
 
-            self.structure = Self.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
-            self.availableActions = Self.availableActions(for: self.structure)
+            self.structure = Presenter.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
+            self.availableActions = Presenter.availableActions(for: self.structure)
         }
 
         init(_ identifier: String? = nil) {
@@ -84,19 +84,12 @@ extension Presenter {
             let baseIdentifier = identifier ?? "com.mvp"
 
             settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
-            structure = Self.emptyStructure
+            structure = Presenter.emptyStructure
         }
 
         private let settings: SettingsProviderInterface
         private var model: PlainModelInterface?
         private var modelCancellable: BindCancellable?
         private weak var view: PresenterViewInterface?
-    }
-}
-
-private extension Presenter.MVP {
-    static let emptyStructure = [Presenter.Scheme("Schemes/mvp-scheme")]
-    static func availableActions(for structure: [VisualItem]) -> ViewModel.Actions {
-        (emptyStructure.count == structure.count) ? .reload : .all
     }
 }

@@ -41,76 +41,15 @@ extension ArchitecturesTests {
         XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
     }
 
-    func testMVPViewModel() throws {
+    func testMVPPresenter() throws {
         let model = Model.PlainModel(with: modelDataProvider)
         let view = TestMVPView()
-        let presenter = Presenter.MVP(Self.identifier)
+        let presenter = Presenter.MVP("\(Self.identifier).mvp.combine")
 
         presenter.setup(with: model, view: view)
-
         XCTAssertNotNil(view.presenter)
-        XCTAssertNotEqual(view.itemsCount, 0)
-        XCTAssertFalse(view.isAllactions)
 
-        let emptyItemsCount = presenter.structure.count
-        XCTAssertEqual(view.itemsCount, emptyItemsCount)
-
-        var step = 1
-        presenter.handle(action: .changeSortingOrder(order: .none))
-        XCTAssertEqual(view.itemCallsCount, step)
-        XCTAssertEqual(view.actionCallsCount, step)
-        XCTAssertFalse(view.isAllactions)
-        XCTAssertEqual(view.itemsCount, emptyItemsCount)
-
-        step += 1
-        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
-        presenter.handle(action: .reload)
-        wait(for: [view.currentExpectation!], timeout: 2.0)
-
-        XCTAssertEqual(view.itemCallsCount, step)
-        XCTAssertEqual(view.actionCallsCount, step)
-        XCTAssertTrue(view.isAllactions)
-        XCTAssertNotEqual(view.itemsCount, emptyItemsCount)
-
-        let noneStructure = presenter.structure.map { $0.testDescription() }
-
-        step += 1
-        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
-        presenter.handle(action: .changeSortingOrder(order: .ascending))
-        wait(for: [view.currentExpectation!], timeout: 2.0)
-
-        XCTAssertEqual(view.itemCallsCount, step)
-        XCTAssertEqual(view.actionCallsCount, step)
-        XCTAssertTrue(view.isAllactions)
-        XCTAssertEqual(view.itemsCount, noneStructure.count)
-
-        let ascendingStructure = presenter.structure.map { $0.testDescription() }
-        XCTAssertNotEqual(ascendingStructure, noneStructure)
-
-        step += 1
-        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
-        presenter.handle(action: .changeSortingOrder(order: .descending))
-        wait(for: [view.currentExpectation!], timeout: 2.0)
-
-        XCTAssertEqual(view.itemCallsCount, step)
-        XCTAssertEqual(view.actionCallsCount, step)
-        XCTAssertTrue(view.isAllactions)
-        XCTAssertEqual(view.itemsCount, noneStructure.count)
-
-        let descendingStructure = presenter.structure.map { $0.testDescription() }
-        XCTAssertNotEqual(descendingStructure, noneStructure)
-        XCTAssertNotEqual(descendingStructure, ascendingStructure)
-
-        step += 1
-        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
-        presenter.handle(action: .clear)
-        wait(for: [view.currentExpectation!], timeout: 2.0)
-
-        XCTAssertEqual(view.itemCallsCount, step)
-        XCTAssertEqual(view.actionCallsCount, step)
-        XCTAssertFalse(view.isAllactions)
-        XCTAssertNotEqual(view.itemsCount, noneStructure.count)
-        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+        try baseMVVPProcessing(presenter: presenter, view: view)
     }
 }
 
@@ -254,8 +193,10 @@ extension ArchitecturesTests {
         private let subject = PassthroughSubject<ViewModelAction, Never>()
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
+}
 
-    class TestMVPView: PresenterViewInterface {
+extension ArchitecturesTests {
+    class TestMVPView: TestMVPViewInterface, PresenterViewInterface {
         weak var presenter: PresenterInterface?
 
         func handle(update: Presenter.Update) {
@@ -270,7 +211,11 @@ extension ArchitecturesTests {
 
             currentExpectation?.fulfill()
         }
-        
+
+        func handle(action: Presenter.Action) {
+            presenter?.handle(action: action)
+        }
+
         private(set) var itemsCount: Int = 0
         private(set) var isAllactions = false
         private(set) var itemCallsCount = 0
@@ -278,4 +223,88 @@ extension ArchitecturesTests {
 
         var currentExpectation: XCTestExpectation?
     }
+
+    func baseMVVPProcessing(presenter: PresenterInterface, view: TestMVPViewInterface) throws {
+        XCTAssertNotEqual(view.itemsCount, 0)
+        XCTAssertFalse(view.isAllactions)
+
+        let emptyItemsCount = presenter.structure.count
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+        var step = 1
+        view.handle(action: .changeSortingOrder(order: .none))
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertFalse(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .reload)
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertNotEqual(view.itemsCount, emptyItemsCount)
+
+        if presenter.sortingOrder != .none {
+            step += 1
+            view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+            view.handle(action: .changeSortingOrder(order: .none)) // reset to .none
+            wait(for: [view.currentExpectation!], timeout: 2.0)
+        }
+
+        let noneStructure = presenter.structure.map { $0.testDescription() }
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .changeSortingOrder(order: .ascending))
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, noneStructure.count)
+
+        let ascendingStructure = presenter.structure.map { $0.testDescription() }
+        XCTAssertNotEqual(ascendingStructure, noneStructure)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .changeSortingOrder(order: .descending))
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, noneStructure.count)
+
+        let descendingStructure = presenter.structure.map { $0.testDescription() }
+        XCTAssertNotEqual(descendingStructure, noneStructure)
+        XCTAssertNotEqual(descendingStructure, ascendingStructure)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .clear)
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertFalse(view.isAllactions)
+        XCTAssertNotEqual(view.itemsCount, noneStructure.count)
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+    }
+}
+
+protocol TestMVPViewInterface: AnyObject {
+    var itemsCount: Int { get }
+    var isAllactions: Bool  { get }
+    var itemCallsCount: Int  { get }
+    var actionCallsCount: Int  { get }
+
+    var currentExpectation: XCTestExpectation? { get set }
+
+    func handle(action: Presenter.Action)
 }

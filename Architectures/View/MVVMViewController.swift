@@ -61,7 +61,7 @@ extension MVVMViewController: ViewDataSource {
         viewModel.structure.count
     }
 
-    func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
+    func viewController(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
         viewModel.structure[index]
     }
 }

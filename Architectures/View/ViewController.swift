@@ -28,7 +28,7 @@ protocol ViewInterface: AnyObject {
 
 protocol ViewDataSource: AnyObject {
     func viewControllerNumberOfItems(_ view: ViewInterface) -> Int
-    func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem
+    func viewController(_ view: ViewInterface, itemAt index: Int) -> VisualItem
 }
 #if USE_COMBINE_FOR_VIEW_ACTIONS
 enum ViewActions {
@@ -146,8 +146,8 @@ extension ViewController: DataTableViewControllerDataSource {
         dataSource?.viewControllerNumberOfItems(self) ?? 0
     }
 
-    func dataTableViewControler(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem? {
-        dataSource?.viewControler(self, itemAt: index)
+    func dataTableViewController(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem? {
+        dataSource?.viewController(self, itemAt: index)
     }
 }
 

@@ -38,7 +38,7 @@ class MVPViewController: UIViewController, PresenterViewInterface {
         viewInterface?.reloadButtonEnabled = presenter?.availableActions.contains(.reload) ?? false
         viewInterface?.sortingOrderButtonEnabled = presenter?.availableActions.contains(.changeSortingOrder) ?? false
 
-        (viewInterface as? UIViewController)?.title = "MVVM"
+        (viewInterface as? UIViewController)?.title = "MVP"
         viewInterface?.sortingOrder = presenter?.sortingOrder ?? .none
     }
 

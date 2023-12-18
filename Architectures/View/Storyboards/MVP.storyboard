@@ -46,10 +46,10 @@
             </objects>
             <point key="canvasLocation" x="130" y="364"/>
         </scene>
-        <!--View Controller-->
+        <!--Combine View Controller-->
         <scene sceneID="pdg-z8-KYa">
             <objects>
-                <viewController storyboardIdentifier="com.mvp.combine.viewController" id="sIT-R6-9Ad" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="com.mvp.combine.viewController" id="sIT-R6-9Ad" customClass="MVPCombineViewController" customModule="Architectures" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Y5c-pj-GYX">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -11,6 +11,8 @@ import UIKit
 protocol CombinePresenterInterface: PresenterInterface {
     var structureBind: AnyPublisher<[VisualItem], Never> { get }
     var availableActionsBind: AnyPublisher<Presenter.Actions, Never> { get }
+
+    func viewDidLoad()
 }
 
 extension Presenter {
@@ -39,6 +41,10 @@ extension Presenter {
         var structureBind: AnyPublisher<[VisualItem], Never> { structureSubject.eraseToAnyPublisher() }
         var availableActionsBind: AnyPublisher<Presenter.Actions, Never> { availableActionsSubject.eraseToAnyPublisher() }
 
+        func viewDidLoad() {
+            availableActions = Self.availableActions(for: structure)
+        }
+
         func setup(with model: CombineModelInterface, view: CombinePresenterViewInterface) {
             self.bag.removeAll()
 
@@ -60,6 +66,25 @@ extension Presenter {
             }.store(in: &bag)
 
             self.view?.presenter = self
+            self.view?.actionEvent.sink { [weak self] in
+                guard let self = self else { return }
+
+                switch $0 {
+                case .changeSortingOrder(let order):
+                    guard self.availableActions.contains(.changeSortingOrder) else { break }
+
+                    self.sortingOrder = order
+                    self.settings.sortingOrder = order.toSortingOrder()
+
+                    self.model?.reload()
+                case .clear:
+                    guard self.availableActions.contains(.clear) else { break }
+                    self.model?.clear()
+                case .reload:
+                    guard self.availableActions.contains(.reload) else { break }
+                    self.model?.reload()
+                }
+            }.store(in: &bag)
 
             self.structure = Self.emptyStructure + self.model!.structure.compactMap { $0.toVisualItem() }
             self.availableActions = Self.availableActions(for: self.structure)

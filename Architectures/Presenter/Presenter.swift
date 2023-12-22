@@ -9,8 +9,8 @@ import Foundation
 
 protocol PresenterInterface: AnyObject {
     var structure: [VisualItem] { get }
-    var sortingOrder: Model.SortingOrder { get }
     var availableActions: Presenter.Actions { get }
+    var sortingOrder: Model.SortingOrder { get }
 
     func handle(action: Presenter.Action)
 }

@@ -197,6 +197,32 @@ extension ArchitecturesTests {
 
 extension ArchitecturesTests {
     class TestMVPView: TestMVPViewInterface, PresenterViewInterface {
+    #if USE_BINDING_FOR_PALIN_MVP
+        weak var presenter: PresenterInterface? {
+            didSet {
+                structureCancellable?.cancel()
+                actionsCancellable?.cancel()
+
+                guard let painPresenter = presenter as? PlainPresenterInterface else { return }
+
+                structureCancellable = painPresenter.structureBind.bind { [weak self] in
+                    self?.itemsCount = $0.count
+                    self?.itemCallsCount += 1
+                    self?.currentExpectation?.fulfill()
+                }
+
+                actionsCancellable = painPresenter.availableActionsBind.bind { [weak self] in
+                    self?.isAllactions = $0 == Presenter.Actions.all
+                    self?.actionCallsCount += 1
+                    self?.currentExpectation?.fulfill()
+                }
+            }
+        }
+
+        func handle(update: Presenter.Update) {
+            fatalError()
+        }
+    #else
         weak var presenter: PresenterInterface?
 
         func handle(update: Presenter.Update) {
@@ -211,7 +237,7 @@ extension ArchitecturesTests {
 
             currentExpectation?.fulfill()
         }
-
+    #endif // USE_BINDING_FOR_PALIN_MVP
         func handle(action: Presenter.Action) {
             presenter?.handle(action: action)
         }
@@ -220,6 +246,11 @@ extension ArchitecturesTests {
         private(set) var isAllactions = false
         private(set) var itemCallsCount = 0
         private(set) var actionCallsCount = 0
+
+    #if USE_BINDING_FOR_PALIN_MVP
+        var structureCancellable: BindCancellable?
+        var actionsCancellable: BindCancellable?
+    #endif // USE_BINDING_FOR_PALIN_MVP
 
         var currentExpectation: XCTestExpectation?
     }

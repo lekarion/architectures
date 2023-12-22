@@ -8,6 +8,22 @@
 import UIKit
 
 class MVPViewController: UIViewController, PresenterViewInterface {
+#if USE_BINDING_FOR_PALIN_MVP
+    var presenter: PresenterInterface? {
+        didSet {
+            structureCancellable?.cancel()
+            actionsCancellable?.cancel()
+
+            guard let painPresenter = presenter as? PlainPresenterInterface else { return }
+
+            setupBindings(painPresenter)
+        }
+    }
+
+    func handle(update: Presenter.Update) {
+        fatalError("Not implemented")
+    }
+#else
     var presenter: PresenterInterface?
 
     func handle(update: Presenter.Update) {
@@ -22,6 +38,7 @@ class MVPViewController: UIViewController, PresenterViewInterface {
             interface.sortingOrderButtonEnabled = presenter?.availableActions.contains(.changeSortingOrder) ?? false
         }
     }
+#endif // USE_BINDING_FOR_PALIN_MVP
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +59,27 @@ class MVPViewController: UIViewController, PresenterViewInterface {
         viewInterface?.sortingOrder = presenter?.sortingOrder ?? .none
     }
 
+    private func setupBindings(_ painPresenter: PlainPresenterInterface) {
+        structureCancellable = painPresenter.structureBind.bind { [weak self] _ in
+            guard let interface = self?.viewInterface else { return }
+            interface.reloadData()
+        }
+
+        actionsCancellable = painPresenter.availableActionsBind.bind { [weak self] in
+            guard let interface = self?.viewInterface else { return }
+
+            interface.clearButtonEnabled = $0.contains(.clear)
+            interface.reloadButtonEnabled = $0.contains(.reload)
+            interface.sortingOrderButtonEnabled = $0.contains(.changeSortingOrder)
+        }
+    }
+
     private weak var viewInterface: ViewInterface?
+
+#if USE_BINDING_FOR_PALIN_MVP
+    var structureCancellable: BindCancellable?
+    var actionsCancellable: BindCancellable?
+#endif // USE_BINDING_FOR_PALIN_MVP
 }
 
 extension MVPViewController: ViewDataSource {

@@ -59,6 +59,7 @@ class MVPViewController: UIViewController, PresenterViewInterface {
         viewInterface?.sortingOrder = presenter?.sortingOrder ?? .none
     }
 
+#if USE_BINDING_FOR_PALIN_MVP
     private func setupBindings(_ painPresenter: PlainPresenterInterface) {
         structureCancellable = painPresenter.structureBind.bind { [weak self] _ in
             guard let interface = self?.viewInterface else { return }
@@ -74,12 +75,11 @@ class MVPViewController: UIViewController, PresenterViewInterface {
         }
     }
 
-    private weak var viewInterface: ViewInterface?
-
-#if USE_BINDING_FOR_PALIN_MVP
     var structureCancellable: BindCancellable?
     var actionsCancellable: BindCancellable?
 #endif // USE_BINDING_FOR_PALIN_MVP
+
+    private weak var viewInterface: ViewInterface?
 }
 
 extension MVPViewController: ViewDataSource {

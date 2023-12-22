@@ -18,6 +18,11 @@ class MVVMCombineViewController: UIViewController {
 
         viewInterface = interface
         viewInterface.dataSource = self
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        viewModel.setup(with: self)
+    #else
+        viewInterface.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         viewModel.structureBind.receive(on: DispatchQueue.main).sink { [weak self] _ in
             self?.viewInterface.reloadData()
@@ -27,11 +32,7 @@ class MVVMCombineViewController: UIViewController {
         viewModel.availableActionsBind.receive(on: DispatchQueue.main).map { $0.contains(.reload) }.assign(to: \.reloadButtonEnabled, on: viewInterface).store(in: &bag)
         viewModel.availableActionsBind.receive(on: DispatchQueue.main).map { $0.contains(.changeSortingOrder) }.assign(to: \.sortingOrderButtonEnabled, on: viewInterface).store(in: &bag)
 
-    #if USE_COMBINE_FOR_VIEW_ACTIONS
-        viewModel.setup(with: self)
-    #else
-        viewInterface.delegate = self
-    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+        viewModel.viewDidLoad()
 
         (viewInterface as? UIViewController)?.title = "MVVM + Combine"
         viewInterface.sortingOrder = viewModel.sortingOrder
@@ -48,7 +49,7 @@ extension MVVMCombineViewController: ViewDataSource {
         viewModel.structure.count
     }
 
-    func viewControler(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
+    func viewController(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
         viewModel.structure[index]
     }
 }

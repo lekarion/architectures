@@ -13,22 +13,22 @@ import Combine
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
 extension ArchitecturesTests {
-    func testMVVMModel() throws {
-        let model = Model.MVVM(with: modelDataProvider)
+    func testPlainModel() throws {
+        let model = Model.PlainModel(with: modelDataProvider)
 
         var cancellable: BindCancellable?
         try baseModelProcessing(model: model) {
-            cancellable = model.structure.bind($0)
+            cancellable = model.structureBind.bind($0)
         }
 
-        XCTAssertTrue(model.structure.isInUse)
+        XCTAssertTrue(model.structureBind.isInUse)
 
         cancellable?.cancel()
-        XCTAssertFalse(model.structure.isInUse)
+        XCTAssertFalse(model.structureBind.isInUse)
     }
 
     func testMVVMViewModel() throws {
-        let viewModelHolder = ViewModelHolder(ViewModel.MVVM())
+        let viewModelHolder = ViewModelHolder(ViewModel.MVVM(Self.identifier))
 
         var cancellable: BindCancellable?
         try baseViewModelProcessing(viewModel: viewModelHolder) {
@@ -40,19 +40,27 @@ extension ArchitecturesTests {
         cancellable?.cancel()
         XCTAssertFalse(viewModelHolder.viewModel.structureBind.isInUse)
     }
+
+    func testMVPPresenter() throws {
+        let model = Model.PlainModel(with: modelDataProvider)
+        let view = TestMVPView()
+        let presenter = Presenter.MVP("\(Self.identifier).mvp.combine")
+
+        presenter.setup(with: model, view: view)
+        XCTAssertNotNil(view.presenter)
+
+        try baseMVVPProcessing(presenter: presenter, view: view)
+    }
 }
 
 // MARK: - ### Reuse ### -
 extension ArchitecturesTests {
-    func baseModelProcessing<T: ModelInterface>(model: T, ignoreFirst: Bool = false, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
-        var callsCount = ignoreFirst ? -1 : 0
-        var lastCount = model.rawStructure.count
+    func baseModelProcessing<T: ModelInterface>(model: T, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
+        var callsCount = 0
+        var lastCount = model.structure.count
 
         bind { value in
             callsCount += 1
-
-            guard callsCount > 0 else { return }
-
             lastCount = value.count
         }
 
@@ -64,7 +72,7 @@ extension ArchitecturesTests {
 
         step += 1
         model.reload()
-        let noneStructure = model.rawStructure.map { $0.testDescription() }
+        let noneStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertNotEqual(lastCount, 0)
@@ -75,7 +83,7 @@ extension ArchitecturesTests {
         XCTAssertEqual(callsCount + 1, step)
 
         model.reload()
-        let ascendingStructure = model.rawStructure.map { $0.testDescription() }
+        let ascendingStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(noneStructure.count, ascendingStructure.count)
@@ -84,7 +92,7 @@ extension ArchitecturesTests {
         step += 1
         model.sortingOrder = .descending
         model.reload()
-        let descendingStructure = model.rawStructure.map { $0.testDescription() }
+        let descendingStructure = model.structure.map { $0.testDescription() }
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(ascendingStructure.count, descendingStructure.count)
@@ -96,28 +104,18 @@ extension ArchitecturesTests {
 
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, 0)
-        XCTAssertTrue(model.rawStructure.isEmpty)
+        XCTAssertTrue(model.structure.isEmpty)
     }
 
-    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, ignoreFirst: Int = 0, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
-        let effectiveIgnoreFirst = 0 >= ignoreFirst ? 0 : -ignoreFirst
-
-        var callsCount = effectiveIgnoreFirst
+    func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
+        var callsCount = 0
         var lastCount = viewModel.rawStructure.count
 
         currentExpectation = XCTestExpectation(description: "Waiting for init")
-        currentExpectation?.isInverted = true
         bind { [weak self] value in
             callsCount += 1
-
-            guard callsCount >= 0 else { return }
-
             lastCount = value.count
             self?.currentExpectation?.fulfill()
-        }
-
-        if 0 != effectiveIgnoreFirst {
-            wait(for: [currentExpectation!], timeout: 5.0)
         }
 
         var step = 0
@@ -195,4 +193,149 @@ extension ArchitecturesTests {
         private let subject = PassthroughSubject<ViewModelAction, Never>()
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
+}
+
+extension ArchitecturesTests {
+    class TestMVPView: TestMVPViewInterface, PresenterViewInterface {
+    #if USE_BINDING_FOR_PALIN_MVP
+        weak var presenter: PresenterInterface? {
+            didSet {
+                structureCancellable?.cancel()
+                actionsCancellable?.cancel()
+
+                guard let painPresenter = presenter as? PlainPresenterInterface else { return }
+
+                structureCancellable = painPresenter.structureBind.bind { [weak self] in
+                    self?.itemsCount = $0.count
+                    self?.itemCallsCount += 1
+                    self?.currentExpectation?.fulfill()
+                }
+
+                actionsCancellable = painPresenter.availableActionsBind.bind { [weak self] in
+                    self?.isAllactions = $0 == Presenter.Actions.all
+                    self?.actionCallsCount += 1
+                    self?.currentExpectation?.fulfill()
+                }
+            }
+        }
+
+        func handle(update: Presenter.Update) {
+            fatalError()
+        }
+    #else
+        weak var presenter: PresenterInterface?
+
+        func handle(update: Presenter.Update) {
+            switch update {
+            case .structure:
+                itemsCount = presenter?.structure.count ?? 0
+                itemCallsCount += 1
+            case .availableActions:
+                isAllactions = presenter?.availableActions == Presenter.Actions.all
+                actionCallsCount += 1
+            }
+
+            currentExpectation?.fulfill()
+        }
+    #endif // USE_BINDING_FOR_PALIN_MVP
+        func handle(action: Presenter.Action) {
+            presenter?.handle(action: action)
+        }
+
+        private(set) var itemsCount: Int = 0
+        private(set) var isAllactions = false
+        private(set) var itemCallsCount = 0
+        private(set) var actionCallsCount = 0
+
+    #if USE_BINDING_FOR_PALIN_MVP
+        var structureCancellable: BindCancellable?
+        var actionsCancellable: BindCancellable?
+    #endif // USE_BINDING_FOR_PALIN_MVP
+
+        var currentExpectation: XCTestExpectation?
+    }
+
+    func baseMVVPProcessing(presenter: PresenterInterface, view: TestMVPViewInterface) throws {
+        XCTAssertNotEqual(view.itemsCount, 0)
+        XCTAssertFalse(view.isAllactions)
+
+        let emptyItemsCount = presenter.structure.count
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+        var step = 1
+        view.handle(action: .changeSortingOrder(order: .none))
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertFalse(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .reload)
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertNotEqual(view.itemsCount, emptyItemsCount)
+
+        if presenter.sortingOrder != .none {
+            step += 1
+            view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+            view.handle(action: .changeSortingOrder(order: .none)) // reset to .none
+            wait(for: [view.currentExpectation!], timeout: 2.0)
+        }
+
+        let noneStructure = presenter.structure.map { $0.testDescription() }
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .changeSortingOrder(order: .ascending))
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, noneStructure.count)
+
+        let ascendingStructure = presenter.structure.map { $0.testDescription() }
+        XCTAssertNotEqual(ascendingStructure, noneStructure)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .changeSortingOrder(order: .descending))
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertTrue(view.isAllactions)
+        XCTAssertEqual(view.itemsCount, noneStructure.count)
+
+        let descendingStructure = presenter.structure.map { $0.testDescription() }
+        XCTAssertNotEqual(descendingStructure, noneStructure)
+        XCTAssertNotEqual(descendingStructure, ascendingStructure)
+
+        step += 1
+        view.currentExpectation = XCTestExpectation(description: "Waiting for reload")
+        view.handle(action: .clear)
+        wait(for: [view.currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(view.itemCallsCount, step)
+        XCTAssertEqual(view.actionCallsCount, step)
+        XCTAssertFalse(view.isAllactions)
+        XCTAssertNotEqual(view.itemsCount, noneStructure.count)
+        XCTAssertEqual(view.itemsCount, emptyItemsCount)
+
+    }
+}
+
+protocol TestMVPViewInterface: AnyObject {
+    var itemsCount: Int { get }
+    var isAllactions: Bool  { get }
+    var itemCallsCount: Int  { get }
+    var actionCallsCount: Int  { get }
+
+    var currentExpectation: XCTestExpectation? { get set }
+
+    func handle(action: Presenter.Action)
 }

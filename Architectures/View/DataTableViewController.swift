@@ -15,7 +15,7 @@ protocol DataViewControllerInterface: AnyObject {
 
 protocol DataTableViewControllerDataSource: AnyObject {
     func dataTableViewControllerNumberOfItems(_ controller: DataTableViewController) -> Int
-    func dataTableViewControler(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem?
+    func dataTableViewController(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem?
 }
 
 class DataTableViewController: UITableViewController, DataViewControllerInterface {
@@ -30,7 +30,7 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let item = dataSource?.dataTableViewControler(self, itemAt: indexPath.row) else { return UITableViewCell() }
+        guard let item = dataSource?.dataTableViewController(self, itemAt: indexPath.row) else { return UITableViewCell() }
 
         let cell: UITableViewCell
 
@@ -56,6 +56,10 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
         }
 
         return cell
+    }
+
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        !(dataSource?.dataTableViewController(self, itemAt: indexPath.row) is SchemeItem)
     }
 }
 

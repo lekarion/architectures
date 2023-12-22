@@ -16,7 +16,7 @@ protocol DataModelItem: ModelItem {
 }
 
 protocol ModelInterface: AnyObject {
-    var rawStructure: [ModelItem] { get }
+    var structure: [ModelItem] { get }
     var sortingOrder: Model.SortingOrder { get set }
 
     func clear()

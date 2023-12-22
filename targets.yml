@@ -78,6 +78,7 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.architectures
 #      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_COMBINE_FOR_VIEW_ACTIONS
+#      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_BINDING_FOR_PALIN_MVP
 
   ArchitecturesTests:
     templates: [CommonTargetTests]
@@ -85,6 +86,7 @@ targets:
       - target: Architectures
 #    settings:
 #      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_COMBINE_FOR_VIEW_ACTIONS
+#      SWIFT_ACTIVE_COMPILATION_CONDITIONS: USE_BINDING_FOR_PALIN_MVP
 
   ArchitecturesUITests:
     templates: [CommonTargetUITests]

@@ -49,7 +49,7 @@ extension ViewModel {
                 model.sortingOrder = newValue
                 settings?.sortingOrder = newValue.toSortingOrder()
 
-                guard !model.structure.value.isEmpty else { return }
+                guard !model.structure.isEmpty else { return }
                 model.reload()
             }
         }
@@ -63,20 +63,22 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
-        init() {
+        init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")
             }
 
-            settings = appCoordinator.settingsProvider(for: "com.mvvm.settings")
+            let baseIdentifier = identifier ?? "com.mvvm"
 
-            model = Model.MVVM(with: appCoordinator.dataProvider(for: "com.mvvm.data"))
+            settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
+
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
-            structureBind = GenericBind(value: Self.emptyStructure + model.structure.value.compactMap { $0.toVisualItem() })
+            structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })
             availableActionsBind = GenericBind(value: Self.availableActions(for: structureBind.value))
 
-            modelCancellable = model.structure.bind { [weak self] structure in
+            modelCancellable = model.structureBind.bind { [weak self] structure in
                 guard let self = self else { return }
 
                 let newStucture = Self.emptyStructure + structure.compactMap { $0.toVisualItem() }
@@ -92,7 +94,7 @@ extension ViewModel {
         }
 
         private let settings: SettingsProviderInterface?
-        private let model: Model.MVVM
+        private let model: Model.PlainModel
         private var modelCancellable: BindCancellable?
     #if USE_COMBINE_FOR_VIEW_ACTIONS
         private var bag = Set<AnyCancellable>()

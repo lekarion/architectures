@@ -39,8 +39,6 @@ extension ViewModel {
                     self.model.reload()
                 }
             }.store(in: &bag)
-
-            availableActionsSubject.send(Self.availableActions(for: structure))
         }
     #else
         var sortingOrder: Model.SortingOrder {
@@ -49,7 +47,7 @@ extension ViewModel {
                 model.sortingOrder = newValue
                 settings?.sortingOrder = newValue.toSortingOrder()
 
-                guard !model.structure.value.isEmpty else { return }
+                guard !model.structure.isEmpty else { return }
                 model.reload()
             }
         }
@@ -63,17 +61,23 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
-        init() {
+        func viewDidLoad() {
+            availableActionsSubject.send(Self.availableActions(for: structure))
+        }
+
+        init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")
             }
 
-            settings = appCoordinator.settingsProvider(for: "com.mvvm.combine.settings")
+            let baseIdentifier = identifier ?? "com.mvvm.combine"
 
-            model = Model.MVVMCombine(with: appCoordinator.dataProvider(for: "com.mvvm.combine.data"))
+            settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
+
+            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
-            model.structure.receive(on: workQueue).sink { [weak self] value in
+            model.structureBind.receive(on: workQueue).sink { [weak self] value in
                 guard let self = self else { return }
 
                 let visualValue = value.compactMap({ $0.toVisualItem() })
@@ -89,12 +93,12 @@ extension ViewModel {
             bag.forEach { $0.cancel() }
         }
 
-        private(set) var structure = [VisualItem]()
+        private(set) var structure: [VisualItem] = emptyStructure
         private let structureSubject = PassthroughSubject<[VisualItem], Never>()
         private let availableActionsSubject = PassthroughSubject<ViewModel.Actions, Never>()
 
         private let settings: SettingsProviderInterface?
-        private let model: Model.MVVMCombine
+        private let model: Model.CombineModel
         private let workQueue = DispatchQueue(label: "com.developer.viewModelQueue", qos: .default)
 
         private var bag = Set<AnyCancellable>()

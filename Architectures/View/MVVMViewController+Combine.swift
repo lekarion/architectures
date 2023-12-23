@@ -85,5 +85,9 @@ extension MVVMCombineViewController: ViewDelegate {
     func viewControllerDidRequestReload(_ view: ViewInterface) {
         viewModel.reloadData()
     }
+
+    func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
+        // TODO: implement
+    }
 }
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS

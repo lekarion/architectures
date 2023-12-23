@@ -9,6 +9,7 @@ import UIKit
 
 protocol DataViewControllerInterface: AnyObject {
     var dataSource: DataTableViewControllerDataSource? { get set }
+    var delegate: DataTableViewControllerDelegate? { get set }
 
     func reloadData()
 }
@@ -18,8 +19,14 @@ protocol DataTableViewControllerDataSource: AnyObject {
     func dataTableViewController(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem?
 }
 
+protocol DataTableViewControllerDelegate: AnyObject {
+    func dataTableViewController(_ controller: DataTableViewController, didRequestDuplicate item: VisualItem)
+}
+
+// MARK: -
 class DataTableViewController: UITableViewController, DataViewControllerInterface {
     weak var dataSource: DataTableViewControllerDataSource?
+    weak var delegate: DataTableViewControllerDelegate?
 
     func reloadData() {
         tableView.reloadData()
@@ -68,7 +75,14 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
         guard let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = dataSource?.dataTableViewController(self, itemAt: indexPath.row) as? DetailsItem else { return }
 
-        detailsView.show(title: item.title, description: item.description, icon: item.icon)
+        detailsView.show(item: item)
+        detailsView.actionDelegate = self
+    }
+}
+
+extension DataTableViewController: DetailsViewActionDelegate {
+    func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem) {
+        delegate?.dataTableViewController(self, didRequestDuplicate: item)
     }
 }
 
@@ -78,6 +92,7 @@ private extension DataTableViewController {
     static let showDetailsSegueId = "com.show.details"
 }
 
+// MARK: -
 protocol SchemeCellInterface: AnyObject {
     func setup(with item: SchemeItem)
 }

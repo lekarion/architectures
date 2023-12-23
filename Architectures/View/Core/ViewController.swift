@@ -34,12 +34,14 @@ protocol ViewDataSource: AnyObject {
 enum ViewActions {
     case chnageSortingOrder(order: Model.SortingOrder)
     case clear, reload
+    case duplicate(item: VisualItem)
 }
 #else
 protocol ViewDelegate: AnyObject {
     func viewController(_ view: ViewInterface, sortingOrderDidChange: Model.SortingOrder)
     func viewControllerDidRequestClear(_ view: ViewInterface)
     func viewControllerDidRequestReload(_ view: ViewInterface)
+    func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem)
 }
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
@@ -90,6 +92,7 @@ class ViewController: UIViewController, ViewInterface {
 
         self.dataViewController = dataViewController
         self.dataViewController.dataSource = self
+        self.dataViewController.delegate = self
 
         let sortingMenu = UIMenu(title: "Sorting in", options: .displayInline, children: Model.SortingOrder.allCases.map({ order in
             UIAction(title: order.toString(), image: order.toImage(), handler: { [weak self] in
@@ -148,6 +151,12 @@ extension ViewController: DataTableViewControllerDataSource {
 
     func dataTableViewController(_ controller: DataTableViewController, itemAt index: Int) -> VisualItem? {
         dataSource?.viewController(self, itemAt: index)
+    }
+}
+
+extension ViewController: DataTableViewControllerDelegate {
+    func dataTableViewController(_ controller: DataTableViewController, didRequestDuplicate item: VisualItem) {
+        delegate?.viewController(self, didRequestDuplicate: item)
     }
 }
 

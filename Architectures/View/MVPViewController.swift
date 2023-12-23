@@ -107,4 +107,8 @@ extension MVPViewController: ViewDelegate {
     func viewControllerDidRequestReload(_ view: ViewInterface) {
         presenter?.handle(action: .reload)
     }
+
+    func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
+        // TODO: implement
+    }
 }

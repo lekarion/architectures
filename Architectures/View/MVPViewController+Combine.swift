@@ -89,4 +89,8 @@ extension MVPCombineViewController: ViewDelegate {
     func viewControllerDidRequestReload(_ view: ViewInterface) {
         actionSubject.send(.reload)
     }
+
+    func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
+        // TODO: implement
+    }
 }

@@ -8,37 +8,40 @@
 import UIKit
 
 protocol DetailsViewInterface: AnyObject {
-    func show(title: String, description: String?, icon: UIImage?)
+    var actionDelegate: DetailsViewActionDelegate? { get set }
+    func show(item: DetailsItem)
+}
+
+protocol DetailsViewActionDelegate: AnyObject {
+    func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem)
 }
 
 class DetailsViewController: UIViewController {
+    weak var actionDelegate: DetailsViewActionDelegate?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleLabel.text = titleText
-        descriptionLabel.text = descriptionText ?? ""
-        iconView.image = icon
+        titleLabel.text = item?.title ?? ""
+        descriptionLabel.text = item?.description ?? ""
+        iconView.image = item?.icon
     }
 
     @IBOutlet private weak var iconView: UIImageView!
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
 
-    private var titleText = ""
-    private var descriptionText: String?
-    private var icon: UIImage?
+    private var item: DetailsItem?
 }
 
 extension DetailsViewController: DetailsViewInterface {
-    func show(title: String, description: String?, icon: UIImage?) {
+    func show(item: DetailsItem) {
         if nil != titleLabel {
-            titleLabel.text = title
-            descriptionLabel.text = description ?? ""
-            iconView.image = icon
-        } else {
-            self.titleText = title
-            self.descriptionText = description
-            self.icon = icon
+            titleLabel.text = item.title
+            descriptionLabel.text = item.description ?? ""
+            iconView.image = item.icon
         }
+
+        self.item = item
     }
 }

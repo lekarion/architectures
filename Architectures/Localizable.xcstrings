@@ -10,6 +10,12 @@
             "value" : "Ascending Order"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В порядке возрастания"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27,6 +33,12 @@
             "value" : "Descending Order"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В порядке убывания"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -42,6 +54,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Itachi Alternative Description"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Itachi Alternative"
           }
         },
         "uk" : {
@@ -78,6 +96,12 @@
             "value" : "Itachi Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Itachi"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -110,6 +134,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Izuna Description"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Izuna"
           }
         },
         "uk" : {
@@ -146,6 +176,12 @@
             "value" : "Kakashi Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Kakashi"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -178,6 +214,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Madara Eternal Description"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Madara Eternal"
           }
         },
         "uk" : {
@@ -214,6 +256,12 @@
             "value" : "Madara Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Madara"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -246,6 +294,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sasuke Description"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Sasuke"
           }
         },
         "uk" : {
@@ -282,6 +336,12 @@
             "value" : "Tomoe Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Tomoe"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
@@ -314,6 +374,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unsorted Order"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без сортировки"
           }
         },
         "uk" : {

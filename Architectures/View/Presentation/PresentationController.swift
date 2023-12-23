@@ -100,10 +100,8 @@ class PresentationController: UIPresentationController {
         return area.size
     }
     
-    // MARK: ### Private ###
     private var dimmingView: UIView? = nil
 }
 
-// MARK: -
 extension PresentationController: PresentationSettingsProvider {
 }

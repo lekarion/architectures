@@ -38,7 +38,6 @@ class PresentationTransitioningDelegate: NSObject, UIViewControllerTransitioning
         return PresentationAnimatedTransitioning(presentationAnimation: backAnimation, duration: backDuration, isPresentation: false)
     }
     
-    // MARK: ### Private ###
     private var backAnimation: PresentationAnimationDirection = .centerZoom
     private var backDuration: TimeInterval = 0.3
 }

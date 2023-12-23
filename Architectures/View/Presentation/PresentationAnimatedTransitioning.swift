@@ -21,7 +21,6 @@ class PresentationAnimatedTransitioning: NSObject {
     }
 }
 
-// MARK: -
 extension PresentationAnimatedTransitioning: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return presentationDuartion
@@ -59,8 +58,7 @@ extension PresentationAnimatedTransitioning: UIViewControllerAnimatedTransitioni
         if isPresenting {
             fromFrame = dismissedFrame
             toFrame = presentedFrame
-        }
-        else {
+        } else {
             fromFrame = presentedFrame
             toFrame = dismissedFrame
         }
@@ -71,8 +69,7 @@ extension PresentationAnimatedTransitioning: UIViewControllerAnimatedTransitioni
         if isPresenting {
             controllerView.frame = CGRect(origin: .zero, size: toFrame.size) // to make snapshot with right size
             animationView = controllerView.snapshotView(afterScreenUpdates: true) ?? UIView(frame: .zero)
-        }
-        else {
+        } else {
             animationView = controllerView.snapshotView(afterScreenUpdates: true) ?? UIView(frame: .zero)
             controllerView.removeFromSuperview()
         }
@@ -82,8 +79,7 @@ extension PresentationAnimatedTransitioning: UIViewControllerAnimatedTransitioni
         
         UIView.animate(withDuration: transitionDuration(using: transitionContext)) {
             animationView.frame = toFrame
-        }
-        completion: { completed in
+        } completion: { completed in
             if completed {
                 animationView.frame = toFrame
                 animationView.removeFromSuperview()

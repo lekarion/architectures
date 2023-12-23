@@ -1,30 +1,30 @@
 [
     {
         "title": "sasuke",
-        "description": "sasuke description"
+        "description": "sasuke.description"
     },
     {
         "title": "madara",
-        "description": "madara description"
+        "description": "madara.description"
     },
     {
         "title": "madara-eternal",
-        "description": "madara-eternal description"
+        "description": "madara-eternal.description"
     },
     {
         "title": "kakashi",
-        "description": "kakashi description"
+        "description": "kakashi.description"
     },
     {
         "title": "izuna",
-        "description": "izuna description"
+        "description": "izuna.description"
     },
     {
         "title": "itachi",
-        "description": "itachi description"
+        "description": "itachi.description"
     },
     {
         "title": "itachi-alt",
-        "description": "itachi-alt description"
+        "description": "itachi-alt.description"
     }
 ]

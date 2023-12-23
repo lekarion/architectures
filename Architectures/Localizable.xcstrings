@@ -1,6 +1,52 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Ascending Order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascending Order"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В порядке возрастания"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У порядку зростання"
+          }
+        }
+      }
+    },
+    "Descending Order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descending Order"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В порядке убывания"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У порядку зменшення"
+          }
+        }
+      }
+    },
     "itachi-alt.description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10,10 +56,16 @@
             "value" : "Itachi Alternative Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Itachi Alternative"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Itachi Alternative Опис"
+            "value" : "Опис Itachi Alternative"
           }
         }
       }
@@ -29,7 +81,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Itachi Alternative"
           }
         }
@@ -44,10 +96,16 @@
             "value" : "Itachi Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Itachi"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Itachi Опис"
+            "value" : "Опис Itachi"
           }
         }
       }
@@ -78,10 +136,16 @@
             "value" : "Izuna Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Izuna"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izuna Опис"
+            "value" : "Опис Izuna"
           }
         }
       }
@@ -112,10 +176,16 @@
             "value" : "Kakashi Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Kakashi"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kakashi Опис"
+            "value" : "Опис Kakashi"
           }
         }
       }
@@ -146,10 +216,16 @@
             "value" : "Madara Eternal Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Madara Eternal"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Madara Eternal Опис"
+            "value" : "Опис Madara Eternal"
           }
         }
       }
@@ -180,10 +256,16 @@
             "value" : "Madara Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Madara"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Madara Опис"
+            "value" : "Опис Madara"
           }
         }
       }
@@ -214,10 +296,16 @@
             "value" : "Sasuke Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Sasuke"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sasuke Опис"
+            "value" : "Опис Sasuke"
           }
         }
       }
@@ -248,10 +336,16 @@
             "value" : "Tomoe Description"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание Tomoe"
+          }
+        },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomoe Опис"
+            "value" : "Опис Tomoe"
           }
         }
       }
@@ -269,6 +363,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomoe"
+          }
+        }
+      }
+    },
+    "Unsorted Order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsorted Order"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без сортировки"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без сортування"
           }
         }
       }

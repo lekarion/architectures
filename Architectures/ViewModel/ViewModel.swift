@@ -83,8 +83,8 @@ class ViewModel {
 
     struct Details: DetailsItem {
         var icon: UIImage? { UIImage(named: modelItem.data.iconName ?? "graduationcap.fill") }
-        var title: String { modelItem.data.title }
-        var description: String? { modelItem.data.description }
+        var title: String { modelItem.data.title.localized }
+        var description: String? { modelItem.data.description?.localized }
 
         init(modelItem: DataModelItem) {
             self.modelItem = modelItem

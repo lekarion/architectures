@@ -78,11 +78,20 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
         detailsView.show(item: item)
         detailsView.actionDelegate = self
     }
+
+    private var currentTransitioningDelegate: PresentationTransitioningDelegate?
 }
 
 extension DataTableViewController: DetailsViewActionDelegate {
     func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem) {
         delegate?.dataTableViewController(self, didRequestDuplicate: item)
+    }
+}
+
+extension DataTableViewController: CustomPresentationSourceInterface {
+    var customTransitioningDelegate: UIViewControllerTransitioningDelegate {
+        currentTransitioningDelegate = PresentationTransitioningDelegate()
+        return currentTransitioningDelegate!
     }
 }
 

@@ -61,11 +61,21 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         !(dataSource?.dataTableViewController(self, itemAt: indexPath.row) is SchemeItem)
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == Self.showDetailsSegueId else { return }
+        guard let detailsView = segue.destination as? DetailsViewInterface else { return }
+        guard let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = dataSource?.dataTableViewController(self, itemAt: indexPath.row) as? DetailsItem else { return }
+
+        detailsView.show(title: item.title, description: item.description, icon: item.icon)
+    }
 }
 
-extension DataTableViewController {
+private extension DataTableViewController {
     static let prefixCellId = "com.visual.cell"
     static let dataCellId = "com.info.cell"
+    static let showDetailsSegueId = "com.show.details"
 }
 
 protocol SchemeCellInterface: AnyObject {

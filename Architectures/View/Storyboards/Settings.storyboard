@@ -90,39 +90,19 @@
                                                             </userDefinedRuntimeAttributes>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Color" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fgi-AZ-fAz">
-                                                            <rect key="frame" x="72" y="22" width="189" height="20.333333333333329"/>
+                                                            <rect key="frame" x="72" y="22" width="193" height="20.333333333333329"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n83-Di-LBd">
-                                                            <rect key="frame" x="269" y="14.333333333333329" width="36" height="36"/>
-                                                            <subviews>
-                                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gd9-1M-gVQ">
-                                                                    <rect key="frame" x="2" y="2" width="32" height="32"/>
-                                                                    <color key="backgroundColor" name="AccentColor"/>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                            <integer key="value" value="6"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                </view>
-                                                            </subviews>
-                                                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <colorWell contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1lL-2a-gky">
+                                                            <rect key="frame" x="273" y="16.333333333333329" width="32" height="32"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="36" id="24d-8E-1vN"/>
-                                                                <constraint firstItem="gd9-1M-gVQ" firstAttribute="top" secondItem="n83-Di-LBd" secondAttribute="top" constant="2" id="4XF-mA-UGx"/>
-                                                                <constraint firstAttribute="bottom" secondItem="gd9-1M-gVQ" secondAttribute="bottom" constant="2" id="600-vb-UtX"/>
-                                                                <constraint firstAttribute="width" constant="36" id="FZR-HA-PG0"/>
-                                                                <constraint firstAttribute="trailing" secondItem="gd9-1M-gVQ" secondAttribute="trailing" constant="2" id="evI-7D-sEm"/>
-                                                                <constraint firstItem="gd9-1M-gVQ" firstAttribute="leading" secondItem="n83-Di-LBd" secondAttribute="leading" constant="2" id="pMi-br-rWD"/>
+                                                                <constraint firstAttribute="width" constant="32" id="IL1-9P-Fmh"/>
+                                                                <constraint firstAttribute="height" constant="32" id="tjr-ct-Iwf"/>
                                                             </constraints>
-                                                            <userDefinedRuntimeAttributes>
-                                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                                    <integer key="value" value="8"/>
-                                                                </userDefinedRuntimeAttribute>
-                                                            </userDefinedRuntimeAttributes>
-                                                        </view>
+                                                            <color key="selectedColor" name="AccentColor"/>
+                                                        </colorWell>
                                                     </subviews>
                                                 </stackView>
                                             </subviews>

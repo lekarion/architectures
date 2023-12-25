@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -201,7 +202,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="XPe-s2-bvO">
-                                <rect key="frame" x="20" y="185" width="353" height="221"/>
+                                <rect key="frame" x="20" y="144.66666666666663" width="353" height="302"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1cs-lg-vjp">
                                         <rect key="frame" x="112.66666666666666" y="0.0" width="128" height="128"/>
@@ -211,17 +212,41 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0fa-Q4-1gz">
-                                        <rect key="frame" x="136.66666666666666" y="144" width="80" height="40.666666666666657"/>
+                                        <rect key="frame" x="136.66666666666666" y="144.00000000000003" width="80" height="40.666666666666657"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mwG-QO-HkS">
-                                        <rect key="frame" x="156" y="200.66666666666669" width="41.333333333333343" height="20.333333333333343"/>
+                                        <rect key="frame" x="156" y="200.66666666666666" width="41.333333333333343" height="20.333333333333343"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mbT-t6-rNP">
+                                        <rect key="frame" x="139" y="237.00000000000003" width="75" height="19.999999999999972"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="ncU-CV-0np"/>
+                                        </constraints>
+                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="raF-vV-abb">
+                                        <rect key="frame" x="152.66666666666666" y="273" width="48" height="29"/>
+                                        <color key="backgroundColor" name="AccentColor"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <inset key="contentEdgeInsets" minX="12" minY="4" maxX="12" maxY="4"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="OK">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="4"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="onOK:" destination="LQa-BS-Y6y" eventType="touchUpInside" id="Q6g-aj-fgC"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -234,6 +259,11 @@
                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="XPe-s2-bvO" secondAttribute="bottom" constant="20" id="fNl-FM-gmX"/>
                             <constraint firstItem="XPe-s2-bvO" firstAttribute="centerY" secondItem="P3z-RW-x2a" secondAttribute="centerY" id="nsX-fV-c3h"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </view>
                     <navigationItem key="navigationItem" id="WzF-z0-T34"/>
                     <size key="freeformSize" width="393" height="591"/>
@@ -253,6 +283,9 @@
         <image name="arrow.up.to.line.alt" catalog="system" width="128" height="128"/>
         <image name="eraser.fill" catalog="system" width="128" height="119"/>
         <image name="pencil.tip.crop.circle.badge.plus" catalog="system" width="128" height="114"/>
+        <namedColor name="AccentColor">
+            <color red="0.51399999856948853" green="0.67599999904632568" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

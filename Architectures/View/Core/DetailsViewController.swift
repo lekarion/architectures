@@ -14,6 +14,7 @@ protocol DetailsViewInterface: AnyObject {
 
 protocol DetailsViewActionDelegate: AnyObject {
     func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem)
+    func detailsViewDdidFinish(_ view: DetailsViewInterface)
 }
 
 class DetailsViewController: UIViewController {
@@ -32,6 +33,12 @@ class DetailsViewController: UIViewController {
     @IBOutlet private weak var descriptionLabel: UILabel!
 
     private var item: DetailsItem?
+}
+
+private extension DetailsViewController { // actions
+    @IBAction func onOK(_ sender: Any) {
+        actionDelegate?.detailsViewDdidFinish(self)
+    }
 }
 
 extension DetailsViewController: DetailsViewInterface {

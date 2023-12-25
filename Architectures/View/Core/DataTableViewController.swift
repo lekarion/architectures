@@ -86,6 +86,11 @@ extension DataTableViewController: DetailsViewActionDelegate {
     func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem) {
         delegate?.dataTableViewController(self, didRequestDuplicate: item)
     }
+
+    func detailsViewDdidFinish(_ view: DetailsViewInterface) {
+        guard let controller = view as? UIViewController else { return }
+        controller.dismiss(animated: true)
+    }
 }
 
 extension DataTableViewController: CustomPresentationSourceInterface {

@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -293,6 +294,53 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Settings" id="TK6-qN-9K6">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="w0p-gy-MAx">
+                                        <rect key="frame" x="20" y="649.33334541320801" width="353" height="80.333335876464844"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="w0p-gy-MAx" id="qZs-hn-HaX">
+                                            <rect key="frame" x="0.0" y="0.0" width="322.66666666666669" height="80.333335876464844"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="zMj-tL-uWD">
+                                                    <rect key="frame" x="20" y="8" width="294.66666666666669" height="64.333333333333329"/>
+                                                    <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gear.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="rfc-dZ-Dlj">
+                                                            <rect key="frame" x="0.0" y="1.3333333333333357" width="64" height="62.666666666666657"/>
+                                                            <color key="tintColor" name="AccentColor"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="64" id="Qyq-kt-tR4"/>
+                                                                <constraint firstAttribute="width" constant="64" id="fzc-sN-Nko"/>
+                                                            </constraints>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                                    <integer key="value" value="8"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </imageView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z1g-sJ-1KG">
+                                                            <rect key="frame" x="71.999999999999986" y="22" width="222.66666666666663" height="20.333333333333329"/>
+                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="zMj-tL-uWD" firstAttribute="top" secondItem="qZs-hn-HaX" secondAttribute="top" constant="8" id="DUK-OK-ApS"/>
+                                                <constraint firstAttribute="trailing" secondItem="zMj-tL-uWD" secondAttribute="trailing" constant="8" id="HuD-0T-ZDX"/>
+                                                <constraint firstItem="zMj-tL-uWD" firstAttribute="leading" secondItem="qZs-hn-HaX" secondAttribute="leadingMargin" id="gK8-UZ-OXU"/>
+                                                <constraint firstAttribute="bottom" secondItem="zMj-tL-uWD" secondAttribute="bottom" constant="8" id="vro-Y6-9MX"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="laP-nD-oHl" kind="show" id="scO-Ec-WSL"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="PlX-FN-s6V" id="Aqa-Ac-U6J"/>
@@ -370,6 +418,16 @@
             </objects>
             <point key="canvasLocation" x="282" y="-88"/>
         </scene>
+        <!--Settings-->
+        <scene sceneID="2iy-yC-Jq6">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Settings" id="laP-nD-oHl" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="SJQ-Is-yLx"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UoA-nU-FHD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="156" y="-41"/>
+        </scene>
         <!--com.mvp.combine.viewController-->
         <scene sceneID="ur9-e0-pud">
             <objects>
@@ -385,9 +443,13 @@
         <segue reference="5tS-pU-ctp"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="gear.circle.fill" catalog="system" width="128" height="123"/>
         <image name="mvc-apple-icon" width="358" height="358"/>
         <image name="mvp-icon" width="358" height="358"/>
         <image name="mvvm-icon" width="358" height="358"/>
+        <namedColor name="AccentColor">
+            <color red="0.51399999856948853" green="0.67599999904632568" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

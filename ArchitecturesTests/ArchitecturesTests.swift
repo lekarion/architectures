@@ -94,6 +94,26 @@ final class ArchitecturesTests: XCTestCase {
             XCTAssertEqual(otherSettingsProvider.sortingOrder, .none)
             XCTAssertNotEqual(otherSettingsProvider.sortingOrder, self.settingsDataProvider.sortingOrder)
             XCTAssertEqual(self.settingsDataProvider.sortingOrder, .ascending)
+
+            self.settingsDataProvider.presentationDimmingColor = nil
+            XCTAssertNil(self.settingsDataProvider.presentationDimmingColor)
+
+            let color = UIColor.white
+            self.settingsDataProvider.presentationDimmingColor = color
+            XCTAssertEqual(self.settingsDataProvider.presentationDimmingColor, color)
+
+            self.settingsDataProvider.presentationDimmingColor = UIColor.red
+            XCTAssertNotEqual(self.settingsDataProvider.presentationDimmingColor, color)
+
+            self.settingsDataProvider.presentationInAnimationDirection = .centerZoom
+            XCTAssertEqual(self.settingsDataProvider.presentationInAnimationDirection, .centerZoom)
+
+            self.settingsDataProvider.presentationInAnimationDirection = .fromBottomToTop
+            XCTAssertNotEqual(self.settingsDataProvider.presentationInAnimationDirection, .centerZoom)
+
+            self.settingsDataProvider.presentationOutAnimationDirection = .fromTopToBottom
+            XCTAssertEqual(self.settingsDataProvider.presentationOutAnimationDirection, .fromTopToBottom)
+            XCTAssertNotEqual(self.settingsDataProvider.presentationOutAnimationDirection, self.settingsDataProvider.presentationInAnimationDirection)
         }
     }
 

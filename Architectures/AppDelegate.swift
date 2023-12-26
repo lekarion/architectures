@@ -53,4 +53,6 @@ extension AppDelegate: AppCoordinator {
 
         return newProvider
     }
+
+    static let genericSettingsProviderId = "com.generic.settings"
 }

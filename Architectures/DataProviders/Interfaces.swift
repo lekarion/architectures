@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit.UIColor
 
 protocol TestDescriptionInterface {
     func testDescription() -> String
@@ -29,6 +30,9 @@ protocol DataItemInterface: TestDescriptionInterface {
 // MARK: - ### Settings provider ### -
 protocol SettingsProviderInterface: AnyObject {
     var sortingOrder: SortingOrder { get set }
+    var presentationInAnimationDirection: PresentationAnimationDirection? { get set }
+    var presentationOutAnimationDirection: PresentationAnimationDirection? { get set }
+    var presentationDimmingColor: UIColor? { get set }
 }
 
 // MARK: -

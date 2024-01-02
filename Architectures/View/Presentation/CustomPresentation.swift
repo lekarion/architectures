@@ -23,7 +23,7 @@ protocol PresentationSettingsProvider: AnyObject {
 }
 
 // MARK: ###
-enum PresentationAnimationDirection {
+enum PresentationAnimationDirection: CaseIterable {
     case fromTopToBottom
     case fromBottomToTop
     case fromLeftToRight

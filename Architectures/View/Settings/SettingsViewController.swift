@@ -21,6 +21,8 @@ class SettingsViewController: UITableViewController {
         switch cell {
         case let colorSelectionCell as ColorSelectionCellInterface:
             setup(colorSelection: colorSelectionCell, identifier: cell.reuseIdentifier ?? "")
+        case let menuCell as MenuButtonCellInterface:
+            setup(menu: menuCell, identifier: cell.reuseIdentifier ?? "")
         default:
             break
         }
@@ -56,11 +58,54 @@ private extension SettingsViewController {
             break
         }
     }
+
+    func setup(menu cell: MenuButtonCellInterface, identifier: String) {
+        switch identifier {
+        case Self.inDirectionCellId:
+            cell.menu = PresentationAnimationDirection.directionMenu("In Direction".localized, context: MenuContext(with: cell, settings: settings, handler: {
+                $0?.stateImage = $3
+                $1?.presentationInAnimationDirection = $2
+            }))
+            cell.stateImage = (settings?.presentationInAnimationDirection ?? .centerZoom).toImage()
+        case Self.outDirectionCellId:
+            cell.menu = PresentationAnimationDirection.directionMenu("Out Direction".localized, context: MenuContext(with: cell, settings: settings, handler: {
+                $0?.stateImage = $3
+                $1?.presentationOutAnimationDirection = $2
+            }))
+            cell.stateImage = (settings?.presentationOutAnimationDirection ?? .centerZoom).toImage()
+        default:
+            break
+        }
+    }
 }
 
 extension SettingsViewController: ColorSelectionCellDelegate {
     func colorSelectionCell(_ cell: ColorSelectionCellInterface, didChange color: UIColor?) {
         settings?.presentationDimmingColor = color
+    }
+}
+
+private protocol MenuContextInterface: AnyObject {
+    func perform(action: UIAction, for direction: PresentationAnimationDirection)
+}
+
+private extension SettingsViewController {
+    class MenuContext: MenuContextInterface {
+        typealias ActionHandler = (MenuButtonCellInterface?, SettingsProviderInterface?, PresentationAnimationDirection, UIImage?) -> Void
+
+        init(with cell: MenuButtonCellInterface?, settings: SettingsProviderInterface?, handler: @escaping ActionHandler) {
+            self.cell = cell
+            self.settings = settings
+            self.actionHandler = handler
+        }
+
+        func perform(action: UIAction, for direction: PresentationAnimationDirection) {
+            actionHandler(cell, settings, direction, action.image)
+        }
+
+        private weak var cell: MenuButtonCellInterface?
+        private weak var settings: SettingsProviderInterface?
+        private let actionHandler: ActionHandler
     }
 }
 
@@ -81,6 +126,27 @@ private extension PresentationAnimationDirection {
     }
 
     func toImage() -> UIImage? {
-        nil
+        let name: String
+        switch self {
+        case .centerZoom:
+            name = "square.arrowtriangle.4.outward"
+        case .fromBottomToTop:
+            name = "arrow.up.to.line.square"
+        case .fromLeftToRight:
+            name = "arrow.right.to.line.square"
+        case .fromRightToLeft:
+            name = "arrow.left.to.line.square"
+        case .fromTopToBottom:
+            name = "arrow.down.to.line.square"
+        }
+        return UIImage(systemName: name)
+    }
+
+    static func directionMenu(_ title: String, context: MenuContextInterface) -> UIMenu {
+        UIMenu(title: title, options: .displayInline, children: allCases.map({ order in
+            UIAction(title: order.toString(), image: order.toImage(), handler: {
+                context.perform(action: $0, for: order)
+            })
+        }))
     }
 }

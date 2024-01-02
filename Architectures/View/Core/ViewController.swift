@@ -94,7 +94,7 @@ class ViewController: UIViewController, ViewInterface {
         self.dataViewController.dataSource = self
         self.dataViewController.delegate = self
 
-        let sortingMenu = UIMenu(title: "Sorting in", options: .displayInline, children: Model.SortingOrder.allCases.map({ order in
+        let sortingMenu = UIMenu(title: "Sorting in".localized, options: .displayInline, children: Model.SortingOrder.allCases.map({ order in
             UIAction(title: order.toString(), image: order.toImage(), handler: { [weak self] in
                 guard let self = self else { return }
 

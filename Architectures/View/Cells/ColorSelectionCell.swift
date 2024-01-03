@@ -17,13 +17,27 @@ protocol ColorSelectionCellDelegate: AnyObject {
 }
 
 class ColorSelectionCell: UITableViewCell {
-    weak var delegate: ColorSelectionCellDelegate?
+    weak var delegate: ColorSelectionCellDelegate? {
+        didSet {
+            guard nil != delegate else { return }
+            setupIfNeed()
+        }
+    }
 
-    @IBAction func colorChanged(_ sender: Any) {
-        delegate?.colorSelectionCell(self, didChange: colorWell.selectedColor)
+    private func setupIfNeed() {
+        guard !setupCompleted else { return }
+
+        colorWell.addAction(UIAction(handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.delegate?.colorSelectionCell(self, didChange: self.colorWell.selectedColor)
+        }), for: .valueChanged)
+
+        setupCompleted = true
     }
 
     @IBOutlet private weak var colorWell: UIColorWell!
+
+    private var setupCompleted = false
 }
 
 extension ColorSelectionCell: ColorSelectionCellInterface {

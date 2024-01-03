@@ -80,6 +80,13 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
     }
 
     private var currentTransitioningDelegate: PresentationTransitioningDelegate?
+    private weak var settings: SettingsProviderInterface? = {
+        guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
+            fatalError("Invalid app state")
+        }
+
+        return appCoordinator.settingsProvider(for: AppDelegate.genericSettingsProviderId)
+    }()
 }
 
 extension DataTableViewController: DetailsViewActionDelegate {
@@ -98,6 +105,14 @@ extension DataTableViewController: CustomPresentationSourceInterface {
         currentTransitioningDelegate = PresentationTransitioningDelegate()
         return currentTransitioningDelegate!
     }
+}
+
+extension DataTableViewController: PresentationSettingsProvider, PresentationAnimationSettingsProvider {
+    var style: PresentationDimmingStyle { .color }
+    var color: UIColor { settings?.presentationDimmingColor ?? UIColor.systemBlue.withAlphaComponent(0.65) }
+
+    var presentingAnimation: PresentationAnimationDirection { settings?.presentationInAnimationDirection ?? .centerZoom }
+    var dismissingAnimation: PresentationAnimationDirection { settings?.presentationOutAnimationDirection ?? .centerZoom }
 }
 
 private extension DataTableViewController {

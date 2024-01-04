@@ -74,7 +74,8 @@ extension ViewModel {
 
             settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
 
-            model = Model.CombineModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
+            let providersIdentifier = "\(baseIdentifier).data"
+            model = Model.CombineModel(with: appCoordinator.dataProvider(for: providersIdentifier), imageProvider: appCoordinator.imagesProvider(for: providersIdentifier))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             model.structureBind.receive(on: workQueue).sink { [weak self] value in

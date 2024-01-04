@@ -21,6 +21,9 @@ protocol ModelInterface: AnyObject {
 
     func clear()
     func reload()
+
+    func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface]
+    func duplicate(_ items: [DataItemInterface])
 }
 
 class Model {
@@ -43,24 +46,5 @@ class Model {
     }
 
     private init() {
-    }
-}
-
-extension Model.SortingOrder {
-    var toDataProviderSortingOrder: SortingOrder {
-        switch self {
-        case .none:
-            return .none
-        case .ascending:
-            return .ascending
-        case .descending:
-            return .descending
-        }
-    }
-}
-
-extension DataModelItem {
-    func testDescription() -> String {
-        "\(data.title) - \(data.iconName ?? "nil") - \(data.description ?? "nil")"
     }
 }

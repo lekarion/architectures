@@ -12,6 +12,7 @@ final class ArchitecturesTests: XCTestCase {
     override func setUpWithError() throws {
         modelDataProvider = ModelDataProvider(with: Self.identifier)
         settingsDataProvider = SettingsDataProvider(with: Self.identifier)
+        imagesProvider = ImagesProvider(with: Self.identifier)
     }
 
     override func tearDownWithError() throws {
@@ -129,11 +130,13 @@ final class ArchitecturesTests: XCTestCase {
     struct TestDataItem: DataItemInterface {
         let iconName: String?
         let title: String
+        let originalTitle: String? = nil
         let description: String?
     }
 
     var modelDataProvider: DataProviderInterface!
     var settingsDataProvider: SettingsDataProvider!
+    var imagesProvider: ImagesProviderInterface!
     var currentExpectation: XCTestExpectation?
 
     let executionQueue = DispatchQueue(label: "com.architecturesTests.executionQueue", qos: .userInteractive)

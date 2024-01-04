@@ -22,7 +22,8 @@ class TableViewController: UITableViewController {
                 fatalError("Invalid app state")
             }
 
-            let model = Model.PlainModel(with: appCoordinator.dataProvider(for: "com.mvp.data"))
+            let providersIdentifier = "com.mvp.data"
+            let model = Model.PlainModel(with: appCoordinator.dataProvider(for: providersIdentifier), imageProvider: appCoordinator.imagesProvider(for: providersIdentifier))
             let presenter = Presenter.MVP()
 
             presenter.setup(with: model, view: view)
@@ -35,7 +36,8 @@ class TableViewController: UITableViewController {
                 fatalError("Invalid app state")
             }
 
-            let model = Model.CombineModel(with: appCoordinator.dataProvider(for: "com.mvp.data"))
+            let providersIdentifier = "com.mvp.combine.data"
+            let model = Model.CombineModel(with: appCoordinator.dataProvider(for: providersIdentifier), imageProvider: appCoordinator.imagesProvider(for: providersIdentifier))
             let presenter = Presenter.MVPCombine()
 
             presenter.setup(with: model, view: view)

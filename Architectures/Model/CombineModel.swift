@@ -46,12 +46,24 @@ extension Model {
             loaded = true
         }
 
-        init(with dataProvider: DataProviderInterface) {
+        func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface] {
+            validateForDuplication(items, dataProvider: dataProvider)
+        }
+
+        func duplicate(_ items: [DataItemInterface]) {
+            loaded = false
+            duplicate(items, dataProvider: dataProvider, imageProvider: imageProvider)
+        }
+
+
+        init(with dataProvider: DataProviderInterface, imageProvider: ImagesProviderInterface) {
             self.dataProvider = dataProvider
+            self.imageProvider = imageProvider
         }
 
         private let structureSubject = PassthroughSubject<[ModelItem], Never>()
         private let dataProvider: DataProviderInterface
+        private let imageProvider: ImagesProviderInterface
         private var loaded = false
     }
 }

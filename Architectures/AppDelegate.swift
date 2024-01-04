@@ -24,11 +24,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private var dataProviders = [String: DataProviderInterface]()
     private var settingsProviders = [String: SettingsProviderInterface]()
+    private var imageProviders = [String: ImagesProviderInterface]()
 }
 
 protocol AppCoordinator: AnyObject {
     func dataProvider(for identifier: String) -> DataProviderInterface
     func settingsProvider(for identifier: String) -> SettingsProviderInterface
+    func imagesProvider(for identifier: String) -> ImagesProviderInterface
 }
 
 extension AppDelegate: AppCoordinator {
@@ -50,6 +52,17 @@ extension AppDelegate: AppCoordinator {
 
         let newProvider = SettingsDataProvider(with: identifier)
         settingsProviders[identifier] = newProvider
+
+        return newProvider
+    }
+
+    func imagesProvider(for identifier: String) -> ImagesProviderInterface {
+        if let provider = imageProviders[identifier] {
+            return provider
+        }
+
+        let newProvider = ImagesProvider(with: identifier)
+        imageProviders[identifier] = newProvider
 
         return newProvider
     }

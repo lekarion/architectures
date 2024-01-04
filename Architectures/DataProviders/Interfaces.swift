@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit.UIColor
+import UIKit.UIImage
 
 protocol TestDescriptionInterface {
     func testDescription() -> String
@@ -18,12 +19,15 @@ protocol DataProviderInterface: AnyObject {
 
     func reload() -> [DataItemInterface]
     func merge(_ items: [DataItemInterface])
+    func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface]
+
     func flush()
 }
 
 protocol DataItemInterface: TestDescriptionInterface {
     var iconName: String? { get }
     var title: String { get }
+    var originalTitle: String? { get } // the title of the original element that was duplicated
     var description: String? { get }
 }
 
@@ -33,6 +37,12 @@ protocol SettingsProviderInterface: AnyObject {
     var presentationInAnimationDirection: PresentationAnimationDirection? { get set }
     var presentationOutAnimationDirection: PresentationAnimationDirection? { get set }
     var presentationDimmingColor: UIColor? { get set }
+}
+
+// MARK: - ### Settings provider ### -
+protocol ImagesProviderInterface: AnyObject {
+    func image(for item: DataItemInterface) -> UIImage?
+    func cacheImage(for item: DataItemInterface)
 }
 
 // MARK: -

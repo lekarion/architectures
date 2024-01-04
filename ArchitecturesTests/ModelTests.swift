@@ -14,7 +14,7 @@ import Combine
 
 extension ArchitecturesTests {
     func testPlainModel() throws {
-        let model = Model.PlainModel(with: modelDataProvider)
+        let model = Model.PlainModel(with: modelDataProvider, imageProvider: imagesProvider)
 
         var cancellable: BindCancellable?
         try baseModelProcessing(model: model) {
@@ -42,7 +42,7 @@ extension ArchitecturesTests {
     }
 
     func testMVPPresenter() throws {
-        let model = Model.PlainModel(with: modelDataProvider)
+        let model = Model.PlainModel(with: modelDataProvider, imageProvider: imagesProvider)
         let view = TestMVPView()
         let presenter = Presenter.MVP("\(Self.identifier).mvp.combine")
 

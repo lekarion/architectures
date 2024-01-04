@@ -72,7 +72,8 @@ extension ViewModel {
 
             settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
 
-            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
+            let providersIdentifier = "\(baseIdentifier).data"
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: providersIdentifier), imageProvider: appCoordinator.imagesProvider(for: providersIdentifier))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })

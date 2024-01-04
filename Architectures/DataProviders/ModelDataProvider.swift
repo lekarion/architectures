@@ -61,6 +61,11 @@ class ModelDataProvider: DataProviderInterface {
         loaded = false
     }
 
+    func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface] {
+        guard !items.isEmpty else { return [] }
+        return []
+    }
+
     func flush() {
         let structure = mutableStructure as? [DataItem] ?? []
 
@@ -82,6 +87,7 @@ private extension ModelDataProvider {
     struct DataItem: DataItemInterface, Codable {
         let iconName: String?
         let title: String
+        var originalTitle: String?
         let description: String?
     }
 

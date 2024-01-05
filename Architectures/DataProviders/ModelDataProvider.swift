@@ -57,13 +57,25 @@ class ModelDataProvider: DataProviderInterface {
     }
 
     func merge(_ items: [DataItemInterface]) {
-        mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : DataItem(iconName: $0.iconName, title: $0.title, description: $0.description) }
+        mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : DataItem(iconName: $0.iconName, title: $0.title, originalTitle: $0.originalTitle, description: $0.description) }
         loaded = false
     }
 
     func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface] {
-        guard !items.isEmpty else { return [] }
-        return []
+        items.compactMap { [weak self] (item: DataItemInterface) -> DataItemInterface? in
+            guard nil == item.originalTitle else { return nil }
+            guard Self.permanentNames.contains(item.title) else { return nil }
+            guard self?.mutableNames.contains(item.title) == false else { return nil }
+
+            var newIconName = Self.duplicateIconNamePrefix + item.title
+            var nameParts = [item.title, "duplicated"]
+            if let iconName = item.iconName {
+                nameParts.append(iconName)
+                newIconName += iconName
+            }
+
+            return DataItem(iconName: newIconName, title: nameParts.joined(separator: Self.duplicateNameSeparator), originalTitle: item.title, description: item.description)
+        }
     }
 
     func flush() {
@@ -73,7 +85,13 @@ class ModelDataProvider: DataProviderInterface {
         try? data.write(to: urlToFile)
     }
 
-    private var mutableStructure: [DataItemInterface]?
+    private var mutableStructure: [DataItemInterface]? {
+        didSet {
+            mutableNames = Set(mutableStructure?.compactMap({ $0.originalTitle }) ?? [])
+        }
+    }
+    private var mutableNames = Set<String>()
+
     private var structure = [DataItemInterface]()
     private var loaded = false
 
@@ -84,6 +102,9 @@ class ModelDataProvider: DataProviderInterface {
 }
 
 private extension ModelDataProvider {
+    static let duplicateNameSeparator = "-@-"
+    static let duplicateIconNamePrefix = "transformedIcon."
+
     struct DataItem: DataItemInterface, Codable {
         let iconName: String?
         let title: String

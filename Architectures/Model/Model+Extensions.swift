@@ -37,10 +37,6 @@ private extension Model {
             iconName = item.iconName
             title = item.title
             description = item.description
-//            iconName = item.title + "-@-duplicated-@-" + (item.iconName ?? "")
-//            title = item.title + "-duplicated"
-//            originalTitle = item.title
-//            description = item.description
         }
     }
 }

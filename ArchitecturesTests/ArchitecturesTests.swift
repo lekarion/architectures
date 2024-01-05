@@ -81,6 +81,44 @@ final class ArchitecturesTests: XCTestCase {
         XCTAssertEqual(noneModifiedData.count, noneTestData.count)
     }
 
+    func testDataDuplication() throws {
+        modelDataProvider.sortingOrder = .none
+        _ = modelDataProvider.reload()
+        modelDataProvider.merge([]) // reset modified items if they was loaded from file
+
+        let originalData = modelDataProvider.reload()
+        let noneData = originalData.map { $0.testDescription() }
+
+        XCTAssertFalse(noneData.isEmpty)
+
+        let count = min(3, originalData.count)
+        let duplicatedItems = modelDataProvider.duplicate(Array(originalData[0 ..< count]))
+
+        XCTAssertEqual(duplicatedItems.count, count)
+        XCTAssertEqual(duplicatedItems.compactMap({ $0.originalTitle }).count, count)
+        XCTAssertEqual(duplicatedItems.compactMap({ $0.iconName }).count, count)
+
+        modelDataProvider.merge(duplicatedItems)
+
+        let allItems = modelDataProvider.reload()
+        let duplicatedData = allItems.map { $0.testDescription() }
+
+        XCTAssertEqual(noneData.count + count, duplicatedData.count)
+        XCTAssertEqual(Set(allItems.map({ $0.title })).count, noneData.count + count)
+
+        let duplicatedItems2 = modelDataProvider.duplicate(Array(originalData[0 ..< count]))
+        XCTAssertTrue(duplicatedItems2.isEmpty)
+
+        print(duplicatedData.description)
+
+        modelDataProvider.flush()
+
+        let testDataProvider = ModelDataProvider(with: Self.identifier)
+        let testModelData = testDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(testModelData, duplicatedData)
+    }
+
     func testSettingsOperations() throws {
         executeSync(description: "Wait for sortingOrder") {
             self.settingsDataProvider.sortingOrder = .none

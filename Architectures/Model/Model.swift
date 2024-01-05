@@ -20,6 +20,7 @@ protocol ModelInterface: AnyObject {
     var sortingOrder: Model.SortingOrder { get set }
 
     func clear()
+    func reset()
     func reload()
 
     func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface]

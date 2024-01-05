@@ -37,6 +37,13 @@ extension Model {
             loaded = false
         }
 
+        func reset() {
+            dataProvider.merge([])
+
+            loaded = false
+            reload()
+        }
+
         func reload() {
             guard !loaded else { return }
 

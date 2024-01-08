@@ -98,6 +98,10 @@ extension MVVMViewController: ViewDelegate {
         viewModel.reloadData()
     }
 
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        viewModel.validateForDuplication([item])
+    }
+    
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
         // TODO: implement
     }

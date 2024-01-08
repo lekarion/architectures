@@ -108,6 +108,10 @@ extension MVPViewController: ViewDelegate {
         presenter?.handle(action: .reload)
     }
 
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        false
+    }
+    
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
         // TODO: implement
     }

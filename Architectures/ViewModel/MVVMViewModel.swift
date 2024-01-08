@@ -63,6 +63,14 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
+        func validateForDuplication(_ items: [VisualItem]) -> Bool {
+            false
+        }
+
+        func duplicate(_ items: [VisualItem]) {
+            // TODO: implement
+        }
+
         init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
                 fatalError("Invalid app state")

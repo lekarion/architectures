@@ -78,6 +78,10 @@ extension MVPCombineViewController: ViewDataSource {
 }
 
 extension MVPCombineViewController: ViewDelegate {
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        false
+    }
+
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         actionSubject.send(.changeSortingOrder(order: order))
     }

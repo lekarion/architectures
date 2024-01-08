@@ -61,6 +61,14 @@ extension ViewModel {
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
+        func validateForDuplication(_ items: [VisualItem]) -> Bool {
+            false
+        }
+
+        func duplicate(_ items: [VisualItem]) {
+            // TODO: Implement
+        }
+
         func viewDidLoad() {
             availableActionsSubject.send(Self.availableActions(for: structure))
         }

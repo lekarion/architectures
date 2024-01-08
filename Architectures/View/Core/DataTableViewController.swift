@@ -20,6 +20,7 @@ protocol DataTableViewControllerDataSource: AnyObject {
 }
 
 protocol DataTableViewControllerDelegate: AnyObject {
+    func dataTableViewController(_ controller: DataTableViewController, isDuplicationAvailableFor item: VisualItem) -> Bool
     func dataTableViewController(_ controller: DataTableViewController, didRequestDuplicate item: VisualItem)
 }
 
@@ -90,11 +91,15 @@ class DataTableViewController: UITableViewController, DataViewControllerInterfac
 }
 
 extension DataTableViewController: DetailsViewActionDelegate {
+    func detailsView(_ view: DetailsViewInterface, isDuplicationAvailableFor item: DetailsItem) -> Bool {
+        delegate?.dataTableViewController(self, isDuplicationAvailableFor: item) ?? false
+    }
+
     func detailsView(_ view: DetailsViewInterface, didRequestDuplicate item: DetailsItem) {
         delegate?.dataTableViewController(self, didRequestDuplicate: item)
     }
 
-    func detailsViewDdidFinish(_ view: DetailsViewInterface) {
+    func detailsViewDidFinish(_ view: DetailsViewInterface) {
         guard let controller = view as? UIViewController else { return }
         controller.dismiss(animated: true)
     }

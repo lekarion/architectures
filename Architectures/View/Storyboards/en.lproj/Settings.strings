@@ -13,3 +13,12 @@
 
 /* Class = "UITableViewSection"; headerTitle = "Details Presentation"; ObjectID = "j0O-Ic-hPf"; */
 "j0O-Ic-hPf.headerTitle" = "Details Presentation";
+
+"2oI-wa-uqt.headerTitle" = "Other";
+"A14-a7-hb7.text" = "Reset Images Cache";
+
+"MGW-bs-kw5.text" = "Warning!";
+"bQh-8P-bgt.text" = "Are you sure you want to clear your image cache? This may slow down your application and cannot be undone.";
+
+"Xd6-ng-KXj.normalTitle" = "OK";
+"M4b-qK-SQw.normalTitle" = "Cancel";

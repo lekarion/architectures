@@ -139,6 +139,29 @@
         }
       }
     },
+    "In Direction" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Direction"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Направлене входа"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напрямок входження"
+          }
+        }
+      }
+    },
     "itachi-alt.description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -375,6 +398,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Madara"
+          }
+        }
+      }
+    },
+    "Out Direction" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Out Direction"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Направлене выхода"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напрямок виходу"
           }
         }
       }

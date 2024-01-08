@@ -12,3 +12,12 @@
 
 /* Class = "UITableViewSection"; headerTitle = "Details Presentation"; ObjectID = "j0O-Ic-hPf"; */
 "j0O-Ic-hPf.headerTitle" = "Презентация деталей";
+
+"2oI-wa-uqt.headerTitle" = "Прочее";
+"A14-a7-hb7.text" = "Сбросить кеш изображений";
+
+"MGW-bs-kw5.text" = "Внимание!";
+"bQh-8P-bgt.text" = "Вы действительно хотите очистить кеш изображений? Это может замедлить работу вашего приложения и не может быть отменено.";
+
+"Xd6-ng-KXj.normalTitle" = "OK";
+"M4b-qK-SQw.normalTitle" = "Отмена";

@@ -23,6 +23,19 @@ extension ArchitecturesTests {
         cancellable?.cancel()
     }
 
+    func testCombineDuplication() throws {
+        let model = Model.CombineModel(with: modelDataProvider, imageProvider: imagesProvider)
+
+        var cancellable: AnyCancellable?
+        try baseModelDuplication(model: model) { handler in
+            cancellable = model.structureBind.sink {
+                handler($0)
+            }
+        }
+
+        cancellable?.cancel()
+    }
+
     func testMVVMViewModelCombine() throws {
         let viewModelHolder = ViewModelHolder(ViewModel.MVVMCombine(Self.identifier))
 

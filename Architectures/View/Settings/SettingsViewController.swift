@@ -40,8 +40,14 @@ class SettingsViewController: UITableViewController {
         }
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let alertController = segue.destination as? AlertViewControllerInterface else { return }
+        alertController.delegate = self
+    }
+
     private weak var settings: SettingsProviderInterface?
     private var onceInitedCellPaths = Set<IndexPath>()
+    private var currentTransitioningDelegate: PresentationTransitioningDelegate?
 }
 
 private extension SettingsViewController {
@@ -82,6 +88,20 @@ private extension SettingsViewController {
 extension SettingsViewController: ColorSelectionCellDelegate {
     func colorSelectionCell(_ cell: ColorSelectionCellInterface, didChange color: UIColor?) {
         settings?.presentationDimmingColor = color
+    }
+}
+
+extension SettingsViewController: CustomPresentationSourceInterface {
+    var customTransitioningDelegate: UIViewControllerTransitioningDelegate {
+        currentTransitioningDelegate = PresentationTransitioningDelegate()
+        return currentTransitioningDelegate!
+    }
+}
+
+extension SettingsViewController: AlertViewControllerDelegate {
+    func alertViewController(_ controller: AlertViewController, didDissmissWithAction action: AlertDismissAction) {
+        // TODO: handle action
+        controller.dismiss(animated: true)
     }
 }
 

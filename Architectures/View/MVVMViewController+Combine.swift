@@ -91,7 +91,7 @@ extension MVVMCombineViewController: ViewDelegate {
     }
 
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
-        // TODO: implement
+        viewModel.duplicate([item])
     }
 }
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS

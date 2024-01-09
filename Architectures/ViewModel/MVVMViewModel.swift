@@ -64,11 +64,14 @@ extension ViewModel {
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         func validateForDuplication(_ items: [VisualItem]) -> Bool {
-            false
+            !model.validateForDuplication(items.compactMap({ $0.toModelItem() })).isEmpty
         }
 
         func duplicate(_ items: [VisualItem]) {
-            // TODO: implement
+            let dataItems = model.validateForDuplication(items.compactMap({ $0.toModelItem() }))
+            guard !dataItems.isEmpty else { return }
+
+            model.duplicate(dataItems)
         }
 
         init(_ identifier: String? = nil) {

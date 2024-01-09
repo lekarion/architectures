@@ -54,4 +54,12 @@ extension DataItemInterface {
     func testDescription() -> String {
         "\(title) - \(description ?? "nil") - \(iconName ?? "nil")"
     }
+
+    var localizedTitle: String {
+        if let testTitle = originalTitle {
+            return String(format: NSLocalizedString("%@ (Duplicated)", comment: ""), testTitle.localized)
+        } else {
+            return title.localized
+        }
+    }
 }

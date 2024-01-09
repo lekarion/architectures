@@ -37,6 +37,17 @@ extension ModelItem {
     }
 }
 
+extension VisualItem {
+    func toModelItem() -> ModelItem? {
+        switch self {
+        case let details as ViewModel.Details:
+            return details.modelItem
+        default:
+            return nil
+        }
+    }
+}
+
 #if USE_COMBINE_FOR_VIEW_ACTIONS
 protocol ViewModelInterface: AnyObject {
     var structure: [VisualItem] { get }
@@ -102,7 +113,6 @@ class ViewModel {
         static let clear = Actions(rawValue: 1 << 0)
         static let reload = Actions(rawValue: 1 << 1)
         static let changeSortingOrder = Actions(rawValue: 1 << 2)
-        static let duplicate = Actions(rawValue: 1 << 3)
 
         static let all: Actions = [.clear, .reload, .changeSortingOrder]
     }

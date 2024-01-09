@@ -56,6 +56,8 @@ extension ModelInterface {
     func duplicate(_ items: [DataItemInterface], dataProvider: DataProviderInterface, imageProvider: ImagesProviderInterface) {
         guard !items.isEmpty else { return }
 
+        let currentItems = dataProvider.reload().compactMap { nil != $0.originalTitle ? $0 : nil }
+
         DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(Int.random(in: 3...7))) { [weak self] in
             guard let self = self else { return }
 
@@ -68,7 +70,7 @@ extension ModelInterface {
 
             guard !newItems.isEmpty else { return }
 
-            dataProvider.merge(newItems)
+            dataProvider.merge(newItems + currentItems)
             self.reload()
         }
     }

@@ -13,6 +13,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        startBackgroundTask()
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        startBackgroundTask()
+    }
+
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -25,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private var dataProviders = [String: DataProviderInterface]()
     private var settingsProviders = [String: SettingsProviderInterface]()
     private var imageProviders = [String: ImagesProviderInterface]()
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 }
 
 protocol AppCoordinator: AnyObject {
@@ -68,4 +77,21 @@ extension AppDelegate: AppCoordinator {
     }
 
     static let genericSettingsProviderId = "com.generic.settings"
+}
+
+private extension AppDelegate {
+    func startBackgroundTask() {
+        guard backgroundTask == .invalid else { return }
+
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "com.architectures.backgroundTask") { [weak self] in
+            guard let self = self else { return }
+
+            dataProviders.forEach { (_, provider) in
+                provider.flush()
+            }
+
+            UIApplication.shared.endBackgroundTask(self.backgroundTask)
+            self.backgroundTask = .invalid
+        }
+    }
 }

@@ -59,6 +59,13 @@ class ModelDataProvider: DataProviderInterface {
     func merge(_ items: [DataItemInterface]) {
         mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : DataItem(iconName: $0.iconName, title: $0.title, originalTitle: $0.originalTitle, description: $0.description) }
         loaded = false
+
+        guard let structureToFlush = mutableStructure, !structureToFlush.isEmpty else { return }
+        flushed = false
+
+        flushingQueue.async { [weak self] in
+            self?.flush()
+        }
     }
 
     func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface] {
@@ -79,10 +86,17 @@ class ModelDataProvider: DataProviderInterface {
     }
 
     func flush() {
+        guard !flushed else { return }
+
         let structure = mutableStructure as? [DataItem] ?? []
 
-        guard let data = try? JSONEncoder().encode(structure) else { return }
-        try? data.write(to: urlToFile)
+        do {
+            let data = try JSONEncoder().encode(structure)
+            try data.write(to: urlToFile)
+            flushed = true
+        } catch {
+            "\(Self.logPrefix): \(#function); \(error)".printToStderr()
+        }
     }
 
     private var mutableStructure: [DataItemInterface]? {
@@ -94,14 +108,20 @@ class ModelDataProvider: DataProviderInterface {
 
     private var structure = [DataItemInterface]()
     private var loaded = false
+    private var flushed = true
 
     private lazy var urlToFile: URL = {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
         return URL(fileURLWithPath: path ?? NSHomeDirectory(), isDirectory: true).appendingPathComponent("\(identifier).json", conformingTo: .json)
     }()
+
+    private lazy var flushingQueue: DispatchQueue = {
+        DispatchQueue(label: "com.modelDataProvider.flushingQueue", qos: .background)
+    }()
 }
 
 private extension ModelDataProvider {
+    static let logPrefix = "ModelDataProvider"
     static let duplicateNameSeparator = "-@-"
     static let duplicateIconNamePrefix = "transformedIcon."
 

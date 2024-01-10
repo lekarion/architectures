@@ -29,6 +29,7 @@ protocol ViewInterface: AnyObject {
 protocol ViewDataSource: AnyObject {
     func viewControllerNumberOfItems(_ view: ViewInterface) -> Int
     func viewController(_ view: ViewInterface, itemAt index: Int) -> VisualItem
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool
 }
 #if USE_COMBINE_FOR_VIEW_ACTIONS
 enum ViewActions {
@@ -42,7 +43,6 @@ protocol ViewDelegate: AnyObject {
     func viewControllerDidRequestClear(_ view: ViewInterface)
     func viewControllerDidRequestReload(_ view: ViewInterface)
 
-    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem)
 }
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS
@@ -158,11 +158,15 @@ extension ViewController: DataTableViewControllerDataSource {
 
 extension ViewController: DataTableViewControllerDelegate {
     func dataTableViewController(_ controller: DataTableViewController, isDuplicationAvailableFor item: VisualItem) -> Bool {
-        delegate?.viewController(self, isDuplicationAvailableFor: item) ?? false
+        dataSource?.viewController(self, isDuplicationAvailableFor: item) ?? false
     }
 
     func dataTableViewController(_ controller: DataTableViewController, didRequestDuplicate item: VisualItem) {
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+        actionSubject.send(.duplicate(item: item))
+    #else
         delegate?.viewController(self, didRequestDuplicate: item)
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
     }
 }
 

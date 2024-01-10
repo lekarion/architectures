@@ -33,7 +33,7 @@ extension ViewModel {
                     self.model.sortingOrder = order
                     self.settings?.sortingOrder = order.toSortingOrder()
 
-                    guard !self.model.structure.value.isEmpty else { break }
+                    guard !self.model.structure.isEmpty else { break }
                     self.model.reload()
                 case .clear:
                     self.model.clear()
@@ -41,6 +41,11 @@ extension ViewModel {
                     self.model.reset()
                 case .reload:
                     self.model.reload()
+                case .duplicate(let items):
+                    let dataItems = self.model.validateForDuplication(items.compactMap({ $0.toModelItem() }))
+                    guard !dataItems.isEmpty else { break }
+
+                    self.model.duplicate(dataItems)
                 }
             }.store(in: &bag)
         }

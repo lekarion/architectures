@@ -52,6 +52,10 @@ extension MVVMCombineViewController: ViewDataSource {
     func viewController(_ view: ViewInterface, itemAt index: Int) -> VisualItem {
         viewModel.structure[index]
     }
+
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        viewModel.validateForDuplication([item])
+    }
 }
 
 #if USE_COMBINE_FOR_VIEW_ACTIONS
@@ -66,6 +70,8 @@ extension MVVMCombineViewController: ViewModelActionInterface {
                 action = .clear
             case .reload:
                 action = .reload
+            case .duplicate(let item):
+                action = .duplicate(items: [item])
             }
 
             return action
@@ -85,10 +91,6 @@ extension MVVMCombineViewController: ViewDelegate {
 
     func viewControllerDidRequestReload(_ view: ViewInterface) {
         viewModel.reloadData()
-    }
-
-    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
-        viewModel.validateForDuplication([item])
     }
 
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {

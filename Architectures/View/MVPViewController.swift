@@ -49,7 +49,10 @@ class MVPViewController: UIViewController, PresenterViewInterface {
 
         viewInterface = interface
         viewInterface?.dataSource = self
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+    #else
         viewInterface?.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         viewInterface?.clearButtonEnabled = presenter?.availableActions.contains(.clear) ?? false
         viewInterface?.reloadButtonEnabled = presenter?.availableActions.contains(.reload) ?? false
@@ -93,8 +96,14 @@ extension MVPViewController: ViewDataSource {
         }
         return presenter.structure[index]
     }
+
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        presenter?.validateForDuplication([item]) ?? false
+    }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+#else
 extension MVPViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         presenter?.handle(action: .changeSortingOrder(order: order))
@@ -109,11 +118,8 @@ extension MVPViewController: ViewDelegate {
         presenter?.handle(action: .reload)
     }
 
-    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
-        presenter?.validateForDuplication([item]) ?? false
-    }
-    
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
         presenter?.handle(action: .duplicate(items: [item]))
     }
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS

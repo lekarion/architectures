@@ -72,7 +72,7 @@ extension Model {
             guard !newItems.isEmpty else { return }
 
             let currentItems = dataProvider.reload().compactMap { nil != $0.originalTitle ? $0 : nil }
-            dataProvider.merge(newItems + currentItems)
+            dataProvider.merge(newItems + currentItems, autoFlush: true)
 
             DispatchQueue.main.async {
                 completion()

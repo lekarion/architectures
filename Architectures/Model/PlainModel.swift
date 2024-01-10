@@ -32,24 +32,14 @@ extension Model {
         }
 
         func reset() {
-            dataProvider.merge([])
+            dataProvider.merge([], autoFlush: true)
 
             loaded = false
             reload()
         }
 
         func reload() {
-            guard !loaded else { return }
-
-            var newStructure = [ModelItem]()
-            Model.dataProcessingQueue.sync {
-                newStructure = dataProvider.reload().map {
-                    InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.localizedTitle, description: $0.description?.localized))
-                }
-            }
-
-            structureBind.value = newStructure
-            loaded = true
+            reload(forced: false)
         }
 
         func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface] {
@@ -62,7 +52,7 @@ extension Model {
                 guard let self = self else { return }
 
                 self.loaded = false
-                self.reload()
+                self.reload(forced: true)
             }
         }
 
@@ -79,4 +69,20 @@ extension Model {
 
 extension PlainModelInterface {
     var structure: [ModelItem] { structureBind.value }
+}
+
+private extension Model.PlainModel {
+    func reload(forced: Bool) {
+        guard !loaded || forced else { return }
+
+        var newStructure = [ModelItem]()
+        Model.dataProcessingQueue.sync {
+            newStructure = dataProvider.reload().map {
+                Model.InfoItem(data: Model.ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.localizedTitle, description: $0.description?.localized))
+            }
+        }
+
+        structureBind.value = newStructure
+        loaded = true
+    }
 }

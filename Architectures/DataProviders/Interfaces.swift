@@ -18,7 +18,7 @@ protocol DataProviderInterface: AnyObject {
     var sortingOrder: SortingOrder { get set }
 
     func reload() -> [DataItemInterface]
-    func merge(_ items: [DataItemInterface])
+    func merge(_ items: [DataItemInterface], autoFlush: Bool)
     func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface]
 
     func flush()

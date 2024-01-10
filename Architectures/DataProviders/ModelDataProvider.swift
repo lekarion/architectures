@@ -56,7 +56,7 @@ class ModelDataProvider: DataProviderInterface {
         return structure
     }
 
-    func merge(_ items: [DataItemInterface]) {
+    func merge(_ items: [DataItemInterface], autoFlush: Bool) {
         var validationTitles = Set<String>()
         mutableStructure = items.compactMap {
             guard !Self.permanentNames.contains($0.title) else { return nil }
@@ -72,8 +72,10 @@ class ModelDataProvider: DataProviderInterface {
         loaded = false
         flushed = false
 
+        guard autoFlush else { return }
+
         flushingQueue.async { [weak self] in
-            self?.flush()
+            self?.flush(forced: true)
         }
     }
 
@@ -95,7 +97,11 @@ class ModelDataProvider: DataProviderInterface {
     }
 
     func flush() {
-        guard !flushed else { return }
+        flush(forced: false)
+    }
+
+    private func flush(forced: Bool) {
+        guard !flushed || forced else { return }
 
         let structure = mutableStructure as? [DataItem] ?? []
 

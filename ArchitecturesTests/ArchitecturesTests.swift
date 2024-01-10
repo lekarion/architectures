@@ -43,7 +43,7 @@ final class ArchitecturesTests: XCTestCase {
     func testModifiedLoading() throws {
         modelDataProvider.sortingOrder = .none
         _ = modelDataProvider.reload()
-        modelDataProvider.merge([]) // reset modified items if they was loaded from file
+        modelDataProvider.merge([], autoFlush: true) // reset modified items if they was loaded from file
 
         let noneData = modelDataProvider.reload().map { $0.testDescription() }
 
@@ -53,7 +53,7 @@ final class ArchitecturesTests: XCTestCase {
 
         modelDataProvider.merge(testItemTitles.map {
             TestDataItem(iconName: nil, title: $0, description: "\($0) description")
-        })
+        }, autoFlush: false)
         let noneModifiedData = modelDataProvider.reload().map { $0.testDescription() }
 
         XCTAssertEqual(noneData.count + testItemTitles.count, noneModifiedData.count)
@@ -84,7 +84,7 @@ final class ArchitecturesTests: XCTestCase {
     func testDataDuplication() throws {
         modelDataProvider.sortingOrder = .none
         _ = modelDataProvider.reload()
-        modelDataProvider.merge([]) // reset modified items if they was loaded from file
+        modelDataProvider.merge([], autoFlush: false) // reset modified items if they was loaded from file
 
         let originalData = modelDataProvider.reload()
         let noneData = originalData.map { $0.testDescription() }
@@ -98,7 +98,7 @@ final class ArchitecturesTests: XCTestCase {
         XCTAssertEqual(duplicatedItems.compactMap({ $0.originalTitle }).count, count)
         XCTAssertEqual(duplicatedItems.compactMap({ $0.iconName }).count, count)
 
-        modelDataProvider.merge(duplicatedItems)
+        modelDataProvider.merge(duplicatedItems, autoFlush: false)
 
         let allItems = modelDataProvider.reload()
         let duplicatedData = allItems.map { $0.testDescription() }

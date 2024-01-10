@@ -79,6 +79,7 @@ extension MVVMCombineViewController: ViewDelegate {
     }
 
     func viewControllerDidRequestClear(_ view: ViewInterface) {
+        viewModel.resetData()
         viewModel.clearData()
     }
 

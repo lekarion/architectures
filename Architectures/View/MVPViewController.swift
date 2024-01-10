@@ -101,6 +101,7 @@ extension MVPViewController: ViewDelegate {
     }
 
     func viewControllerDidRequestClear(_ view: ViewInterface) {
+        presenter?.handle(action: .reset)
         presenter?.handle(action: .clear)
     }
 

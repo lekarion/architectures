@@ -83,6 +83,7 @@ extension MVPCombineViewController: ViewDelegate {
     }
 
     func viewControllerDidRequestClear(_ view: ViewInterface) {
+        actionSubject.send(.reset)
         actionSubject.send(.clear)
     }
 

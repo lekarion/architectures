@@ -74,6 +74,7 @@ protocol ViewModelInterface: AnyObject {
 
     func reloadData()
     func clearData()
+    func resetData()
 
     func validateForDuplication(_ items: [VisualItem]) -> Bool
     func duplicate(_ items: [VisualItem])

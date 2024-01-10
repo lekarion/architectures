@@ -91,6 +91,7 @@ extension MVVMViewController: ViewDelegate {
     }
 
     func viewControllerDidRequestClear(_ view: ViewInterface) {
+        viewModel.resetData()
         viewModel.clearData()
     }
 

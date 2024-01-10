@@ -28,7 +28,7 @@ class Presenter {
 
     enum Action {
         case changeSortingOrder(order: Model.SortingOrder)
-        case clear, reload
+        case clear, reload, reset
         case duplicate(items: [VisualItem])
     }
 

@@ -80,8 +80,10 @@ extension Presenter {
                     self.model?.reload()
                 case .clear:
                     guard self.availableActions.contains(.clear) else { break }
-                    self.model?.reset()
                     self.model?.clear()
+                case .reset:
+                    guard self.availableActions.contains(.clear) else { break }
+                    self.model?.reset()
                 case .reload:
                     guard self.availableActions.contains(.reload) else { break }
                     self.model?.reload()

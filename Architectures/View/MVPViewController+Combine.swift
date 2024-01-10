@@ -78,10 +78,6 @@ extension MVPCombineViewController: ViewDataSource {
 }
 
 extension MVPCombineViewController: ViewDelegate {
-    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
-        false
-    }
-
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         actionSubject.send(.changeSortingOrder(order: order))
     }
@@ -94,7 +90,11 @@ extension MVPCombineViewController: ViewDelegate {
         actionSubject.send(.reload)
     }
 
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        combinePresenter?.validateForDuplication([item]) ?? false
+    }
+
     func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
-        // TODO: implement
+        actionSubject.send(.duplicate(items: [item]))
     }
 }

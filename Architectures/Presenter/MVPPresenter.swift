@@ -57,7 +57,15 @@ extension Presenter {
             case .reload:
                 guard availableActions.contains(.reload) else { break }
                 model?.reload()
+            case .duplicate(let items):
+                guard let validItems = model?.validateForDuplication(items.compactMap({ $0.toModelItem() })), !validItems.isEmpty else { return }
+                model?.duplicate(validItems)
             }
+        }
+
+        func validateForDuplication(_ items: [VisualItem]) -> Bool {
+            guard let model = self.model else { return false }
+            return !model.validateForDuplication(items.compactMap({ $0.toModelItem() })).isEmpty
         }
 
         func setup(with model: PlainModelInterface, view: PresenterViewInterface) {

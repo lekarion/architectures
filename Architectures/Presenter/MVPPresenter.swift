@@ -52,6 +52,7 @@ extension Presenter {
                 model?.reload()
             case .clear:
                 guard availableActions.contains(.clear) else { break }
+                model?.reset()
                 model?.clear()
             case .reload:
                 guard availableActions.contains(.reload) else { break }

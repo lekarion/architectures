@@ -36,6 +36,7 @@ extension ViewModel {
                     guard !self.model.structure.value.isEmpty else { break }
                     self.model.reload()
                 case .clear:
+                    self.model.reset()
                     self.model.clear()
                 case .reload:
                     self.model.reload()
@@ -59,6 +60,7 @@ extension ViewModel {
         }
 
         func clearData() {
+            model.reset()
             model.clear()
         }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS

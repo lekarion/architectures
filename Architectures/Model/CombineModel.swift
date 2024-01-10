@@ -47,19 +47,28 @@ extension Model {
         func reload() {
             guard !loaded else { return }
 
-            structure = dataProvider.reload().map {
-                InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.localizedTitle, description: $0.description?.localized))
+            var newStructure = [ModelItem]()
+            Model.dataProcessingQueue.sync {
+                newStructure = dataProvider.reload().map {
+                    InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.localizedTitle, description: $0.description?.localized))
+                }
             }
+            structure = newStructure
             loaded = true
         }
 
         func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface] {
-            validateForDuplication(items, dataProvider: dataProvider)
+            Model.validateForDuplication(items, dataProvider: dataProvider)
         }
 
         func duplicate(_ items: [DataItemInterface]) {
             loaded = false
-            duplicate(items, dataProvider: dataProvider, imageProvider: imageProvider)
+            Model.duplicate(items, dataProvider: dataProvider, imageProvider: imageProvider) { [weak self] in
+                guard let self = self else { return }
+
+                self.loaded = false
+                self.reload()
+            }
         }
 
 

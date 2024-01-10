@@ -41,8 +41,8 @@ private extension Model {
     }
 }
 
-extension ModelInterface {
-    func validateForDuplication(_ items: [ModelItem], dataProvider: DataProviderInterface) -> [DataItemInterface] {
+extension Model {
+    static func validateForDuplication(_ items: [ModelItem], dataProvider: DataProviderInterface) -> [DataItemInterface] {
         guard !items.isEmpty else { return [] }
 
         let itemsToDuplicate: [DataItemInterface] = items.compactMap {
@@ -50,17 +50,18 @@ extension ModelInterface {
             return Model.DuplicationItemData(with: infoItem.data)
         }
 
-        return dataProvider.duplicate(itemsToDuplicate)
+        var duplicates = [DataItemInterface]()
+        Self.dataProcessingQueue.sync {
+            duplicates = dataProvider.duplicate(itemsToDuplicate)
+        }
+
+        return duplicates
     }
 
-    func duplicate(_ items: [DataItemInterface], dataProvider: DataProviderInterface, imageProvider: ImagesProviderInterface) {
+    static func duplicate(_ items: [DataItemInterface], dataProvider: DataProviderInterface, imageProvider: ImagesProviderInterface, completion: @escaping () -> Void) {
         guard !items.isEmpty else { return }
 
-        let currentItems = dataProvider.reload().compactMap { nil != $0.originalTitle ? $0 : nil }
-
-        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + .seconds(Int.random(in: 3...7))) { [weak self] in
-            guard let self = self else { return }
-
+        Self.dataProcessingQueue.asyncAfter(deadline: .now() + .seconds(Int.random(in: 3...7))) {
             let newItems: [DataItemInterface] = items.compactMap {
                 guard nil != $0.originalTitle, nil != $0.iconName else { return nil }
 
@@ -70,8 +71,12 @@ extension ModelInterface {
 
             guard !newItems.isEmpty else { return }
 
+            let currentItems = dataProvider.reload().compactMap { nil != $0.originalTitle ? $0 : nil }
             dataProvider.merge(newItems + currentItems)
-            self.reload()
+
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
 }

@@ -57,10 +57,19 @@ class ModelDataProvider: DataProviderInterface {
     }
 
     func merge(_ items: [DataItemInterface]) {
-        mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : DataItem(iconName: $0.iconName, title: $0.title, originalTitle: $0.originalTitle, description: $0.description) }
-        loaded = false
+        var validationTitles = Set<String>()
+        mutableStructure = items.compactMap {
+            guard !Self.permanentNames.contains($0.title) else { return nil }
 
-        guard let structureToFlush = mutableStructure, !structureToFlush.isEmpty else { return }
+            let effectiveTitle = $0.originalTitle ?? $0.title
+            guard !validationTitles.contains(effectiveTitle) else { return nil }
+
+            validationTitles.insert(effectiveTitle)
+
+            return DataItem(iconName: $0.iconName, title: $0.title, originalTitle: $0.originalTitle, description: $0.description)
+        }
+
+        loaded = false
         flushed = false
 
         flushingQueue.async { [weak self] in

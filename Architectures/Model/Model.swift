@@ -48,4 +48,8 @@ class Model {
 
     private init() {
     }
+
+    static let dataProcessingQueue = {
+        DispatchQueue(label: "com.model.dataProcessingQueue", qos: .background)
+    }()
 }

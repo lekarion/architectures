@@ -63,9 +63,9 @@ extension Model {
 
         Self.dataProcessingQueue.asyncAfter(deadline: .now() + .seconds(Int.random(in: 3...7))) {
             let newItems: [DataItemInterface] = items.compactMap {
-                guard nil != $0.originalTitle, nil != $0.iconName else { return nil }
+                guard let sourceName = $0.originalTitle, let newName = $0.iconName else { return nil }
 
-                imageProvider.cacheImage(for: $0)
+                imageProvider.clone(imageNamed: sourceName, to: newName)
                 return $0
             }
 

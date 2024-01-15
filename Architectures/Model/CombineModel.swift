@@ -82,7 +82,7 @@ private extension Model.CombineModel {
             var newStructure = [ModelItem]()
             Model.dataProcessingQueue.sync {
                 newStructure = dataProvider.reload().map {
-                    Model.InfoItem(data: Model.ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.localizedTitle, description: $0.description?.localized))
+                    Model.InfoItem(data: Model.ItemData(with: $0), imageProvider: imageProvider)
                 }
             }
             structure = newStructure

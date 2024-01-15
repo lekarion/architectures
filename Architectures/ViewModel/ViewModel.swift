@@ -40,8 +40,8 @@ extension ModelItem {
 extension VisualItem {
     func toModelItem() -> ModelItem? {
         switch self {
-        case let details as ViewModel.Details:
-            return details.modelItem
+        case let holder as DataModelItemHolder:
+            return holder.modelItem
         default:
             return nil
         }
@@ -82,6 +82,10 @@ protocol ViewModelInterface: AnyObject {
 }
 #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
+private protocol DataModelItemHolder {
+    var modelItem: DataModelItem { get }
+}
+
 class ViewModel {
     struct Scheme: SchemeItem {
         let identifier: String
@@ -97,16 +101,21 @@ class ViewModel {
         }
     }
 
-    struct Details: DetailsItem {
-        var icon: UIImage? { UIImage(named: modelItem.data.iconName ?? "graduationcap.fill") }
-        var title: String { modelItem.data.title.localized }
-        var description: String? { modelItem.data.description?.localized }
+    class Details: DetailsItem, DataModelItemHolder {
+        var icon: UIImage? { iconImage }
+        var title: String { modelItem.data.title }
+        var description: String? { modelItem.data.description }
 
         init(modelItem: DataModelItem) {
             self.modelItem = modelItem
         }
 
-        let modelItem: DataModelItem
+        fileprivate let modelItem: DataModelItem
+        private lazy var iconImage: UIImage? = {
+            guard let iconName = modelItem.data.iconName else { return UIImage(systemName: "graduationcap.fill") }
+            if let loadedImage = modelItem.imageProvider?.image(named: iconName) { return loadedImage }
+            return UIImage(systemName: "graduationcap.fill")
+        }()
     }
 
     struct Actions: OptionSet {

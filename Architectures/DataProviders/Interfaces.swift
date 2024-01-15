@@ -41,8 +41,10 @@ protocol SettingsProviderInterface: AnyObject {
 
 // MARK: - ### Settings provider ### -
 protocol ImagesProviderInterface: AnyObject {
-    func image(for item: DataItemInterface) -> UIImage?
-    func cacheImage(for item: DataItemInterface)
+    func image(named: String) -> UIImage?
+    func clone(image: UIImage, to name: String)
+    func clone(imageNamed source: String, to name: String)
+    func reset()
 }
 
 // MARK: -
@@ -53,13 +55,5 @@ enum SortingOrder: String {
 extension DataItemInterface {
     func testDescription() -> String {
         "\(title) - \(description ?? "nil") - \(iconName ?? "nil")"
-    }
-
-    var localizedTitle: String {
-        if let testTitle = originalTitle {
-            return String(format: NSLocalizedString("%@ (Duplicated)", comment: ""), testTitle.localized)
-        } else {
-            return title.localized
-        }
     }
 }

@@ -70,7 +70,7 @@ extension AppDelegate: AppCoordinator {
             return provider
         }
 
-        let newProvider = ImagesProvider(with: identifier)
+        let newProvider = ImagesProvider(with: identifier, thumbnailSize: CGSize(width: 64.0, height: 64.0))
         imageProviders[identifier] = newProvider
 
         return newProvider

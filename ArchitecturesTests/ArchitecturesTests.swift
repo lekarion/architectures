@@ -12,7 +12,7 @@ final class ArchitecturesTests: XCTestCase {
     override func setUpWithError() throws {
         modelDataProvider = ModelDataProvider(with: Self.identifier)
         settingsDataProvider = SettingsDataProvider(with: Self.identifier)
-        imagesProvider = ImagesProvider(with: Self.identifier)
+        imagesProvider = ImagesProvider(with: Self.identifier, thumbnailSize: CGSize(width: 64.0, height: 64.0))
     }
 
     override func tearDownWithError() throws {

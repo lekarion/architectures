@@ -37,21 +37,56 @@ extension Model {
             loaded = false
         }
 
-        func reload() {
-            guard !loaded else { return }
+        func reset() {
+            dataProvider.merge([], autoFlush: true)
 
-            structure = dataProvider.reload().map {
-                InfoItem(data: ItemData(iconName: "Emblems/\($0.iconName ?? $0.title)", title: $0.title.localized, description: $0.description?.localized))
-            }
-            loaded = true
+            loaded = false
+            reload()
         }
 
-        init(with dataProvider: DataProviderInterface) {
+        func reload() {
+            reload(forced: false)
+        }
+
+        func validateForDuplication(_ items: [ModelItem]) -> [DataItemInterface] {
+            Model.validateForDuplication(items, dataProvider: dataProvider)
+        }
+
+        func duplicate(_ items: [DataItemInterface]) {
+            loaded = false
+            Model.duplicate(items, dataProvider: dataProvider, imageProvider: imageProvider) { [weak self] in
+                guard let self = self else { return }
+
+                self.loaded = false
+                self.reload(forced: true)
+            }
+        }
+
+
+        init(with dataProvider: DataProviderInterface, imageProvider: ImagesProviderInterface) {
             self.dataProvider = dataProvider
+            self.imageProvider = imageProvider
         }
 
         private let structureSubject = PassthroughSubject<[ModelItem], Never>()
         private let dataProvider: DataProviderInterface
+        private let imageProvider: ImagesProviderInterface
         private var loaded = false
     }
+}
+
+private extension Model.CombineModel {
+        func reload(forced: Bool) {
+            guard !loaded || forced else { return }
+
+            var newStructure = [ModelItem]()
+            Model.dataProcessingQueue.sync {
+                newStructure = dataProvider.reload().map {
+                    Model.InfoItem(data: Model.ItemData(with: $0), imageProvider: imageProvider)
+                }
+            }
+            structure = newStructure
+            loaded = true
+        }
+
 }

@@ -13,6 +13,7 @@ protocol PresenterInterface: AnyObject {
     var sortingOrder: Model.SortingOrder { get }
 
     func handle(action: Presenter.Action)
+    func validateForDuplication(_ items: [VisualItem]) -> Bool
 }
 
 protocol PresenterViewInterface: AnyObject {
@@ -27,7 +28,8 @@ class Presenter {
 
     enum Action {
         case changeSortingOrder(order: Model.SortingOrder)
-        case clear, reload
+        case clear, reload, reset
+        case duplicate(items: [VisualItem])
     }
 
     enum Update {

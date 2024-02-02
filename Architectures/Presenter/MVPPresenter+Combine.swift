@@ -38,6 +38,11 @@ extension Presenter {
             fatalError("Not implemented")
         }
 
+        func validateForDuplication(_ items: [VisualItem]) -> Bool {
+            guard let model = self.model else { return false }
+            return !model.validateForDuplication(items.compactMap({ $0.toModelItem() })).isEmpty
+        }
+
         var structureBind: AnyPublisher<[VisualItem], Never> { structureSubject.eraseToAnyPublisher() }
         var availableActionsBind: AnyPublisher<Presenter.Actions, Never> { availableActionsSubject.eraseToAnyPublisher() }
 
@@ -76,9 +81,15 @@ extension Presenter {
                 case .clear:
                     guard self.availableActions.contains(.clear) else { break }
                     self.model?.clear()
+                case .reset:
+                    guard self.availableActions.contains(.clear) else { break }
+                    self.model?.reset()
                 case .reload:
                     guard self.availableActions.contains(.reload) else { break }
                     self.model?.reload()
+                case .duplicate(let items):
+                    guard let validItems = self.model?.validateForDuplication(items.compactMap({ $0.toModelItem() })), !validItems.isEmpty else { return }
+                    self.model?.duplicate(validItems)
                 }
             }.store(in: &bag)
 

@@ -12,6 +12,7 @@ final class ArchitecturesTests: XCTestCase {
     override func setUpWithError() throws {
         modelDataProvider = ModelDataProvider(with: Self.identifier)
         settingsDataProvider = SettingsDataProvider(with: Self.identifier)
+        imagesProvider = ImagesProvider(with: Self.identifier, thumbnailSize: CGSize(width: 64.0, height: 64.0))
     }
 
     override func tearDownWithError() throws {
@@ -42,7 +43,7 @@ final class ArchitecturesTests: XCTestCase {
     func testModifiedLoading() throws {
         modelDataProvider.sortingOrder = .none
         _ = modelDataProvider.reload()
-        modelDataProvider.merge([]) // reset modified items if they was loaded from file
+        modelDataProvider.merge([], autoFlush: true) // reset modified items if they was loaded from file
 
         let noneData = modelDataProvider.reload().map { $0.testDescription() }
 
@@ -52,7 +53,7 @@ final class ArchitecturesTests: XCTestCase {
 
         modelDataProvider.merge(testItemTitles.map {
             TestDataItem(iconName: nil, title: $0, description: "\($0) description")
-        })
+        }, autoFlush: false)
         let noneModifiedData = modelDataProvider.reload().map { $0.testDescription() }
 
         XCTAssertEqual(noneData.count + testItemTitles.count, noneModifiedData.count)
@@ -80,6 +81,44 @@ final class ArchitecturesTests: XCTestCase {
         XCTAssertEqual(noneModifiedData.count, noneTestData.count)
     }
 
+    func testDataDuplication() throws {
+        modelDataProvider.sortingOrder = .none
+        _ = modelDataProvider.reload()
+        modelDataProvider.merge([], autoFlush: false) // reset modified items if they was loaded from file
+
+        let originalData = modelDataProvider.reload()
+        let noneData = originalData.map { $0.testDescription() }
+
+        XCTAssertFalse(noneData.isEmpty)
+
+        let count = min(3, originalData.count)
+        let duplicatedItems = modelDataProvider.duplicate(Array(originalData[0 ..< count]))
+
+        XCTAssertEqual(duplicatedItems.count, count)
+        XCTAssertEqual(duplicatedItems.compactMap({ $0.originalTitle }).count, count)
+        XCTAssertEqual(duplicatedItems.compactMap({ $0.iconName }).count, count)
+
+        modelDataProvider.merge(duplicatedItems, autoFlush: false)
+
+        let allItems = modelDataProvider.reload()
+        let duplicatedData = allItems.map { $0.testDescription() }
+
+        XCTAssertEqual(noneData.count + count, duplicatedData.count)
+        XCTAssertEqual(Set(allItems.map({ $0.title })).count, noneData.count + count)
+
+        let duplicatedItems2 = modelDataProvider.duplicate(Array(originalData[0 ..< count]))
+        XCTAssertTrue(duplicatedItems2.isEmpty)
+
+        print(duplicatedData.description)
+
+        modelDataProvider.flush()
+
+        let testDataProvider = ModelDataProvider(with: Self.identifier)
+        let testModelData = testDataProvider.reload().map { $0.testDescription() }
+
+        XCTAssertEqual(testModelData, duplicatedData)
+    }
+
     func testSettingsOperations() throws {
         executeSync(description: "Wait for sortingOrder") {
             self.settingsDataProvider.sortingOrder = .none
@@ -94,6 +133,26 @@ final class ArchitecturesTests: XCTestCase {
             XCTAssertEqual(otherSettingsProvider.sortingOrder, .none)
             XCTAssertNotEqual(otherSettingsProvider.sortingOrder, self.settingsDataProvider.sortingOrder)
             XCTAssertEqual(self.settingsDataProvider.sortingOrder, .ascending)
+
+            self.settingsDataProvider.presentationDimmingColor = nil
+            XCTAssertNil(self.settingsDataProvider.presentationDimmingColor)
+
+            let color = UIColor.white
+            self.settingsDataProvider.presentationDimmingColor = color
+            XCTAssertEqual(self.settingsDataProvider.presentationDimmingColor, color)
+
+            self.settingsDataProvider.presentationDimmingColor = UIColor.red
+            XCTAssertNotEqual(self.settingsDataProvider.presentationDimmingColor, color)
+
+            self.settingsDataProvider.presentationInAnimationDirection = .centerZoom
+            XCTAssertEqual(self.settingsDataProvider.presentationInAnimationDirection, .centerZoom)
+
+            self.settingsDataProvider.presentationInAnimationDirection = .fromBottomToTop
+            XCTAssertNotEqual(self.settingsDataProvider.presentationInAnimationDirection, .centerZoom)
+
+            self.settingsDataProvider.presentationOutAnimationDirection = .fromTopToBottom
+            XCTAssertEqual(self.settingsDataProvider.presentationOutAnimationDirection, .fromTopToBottom)
+            XCTAssertNotEqual(self.settingsDataProvider.presentationOutAnimationDirection, self.settingsDataProvider.presentationInAnimationDirection)
         }
     }
 
@@ -109,11 +168,13 @@ final class ArchitecturesTests: XCTestCase {
     struct TestDataItem: DataItemInterface {
         let iconName: String?
         let title: String
+        let originalTitle: String? = nil
         let description: String?
     }
 
     var modelDataProvider: DataProviderInterface!
     var settingsDataProvider: SettingsDataProvider!
+    var imagesProvider: ImagesProviderInterface!
     var currentExpectation: XCTestExpectation?
 
     let executionQueue = DispatchQueue(label: "com.architecturesTests.executionQueue", qos: .userInteractive)

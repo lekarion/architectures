@@ -41,7 +41,11 @@ class MVPCombineViewController: UIViewController, CombinePresenterViewInterface 
 
         viewInterface = interface
         viewInterface.dataSource = self
+
+    #if USE_COMBINE_FOR_VIEW_ACTIONS
+    #else
         viewInterface.delegate = self
+    #endif // USE_COMBINE_FOR_VIEW_ACTIONS
 
         combinePresenter?.structureBind.receive(on: DispatchQueue.main).sink { [weak self] _ in
             self?.viewInterface.reloadData()
@@ -75,18 +79,30 @@ extension MVPCombineViewController: ViewDataSource {
         }
         return presenter.structure[index]
     }
+
+    func viewController(_ view: ViewInterface, isDuplicationAvailableFor item: VisualItem) -> Bool {
+        presenter?.validateForDuplication([item]) ?? false
+    }
 }
 
+#if USE_COMBINE_FOR_VIEW_ACTIONS
+#else
 extension MVPCombineViewController: ViewDelegate {
     func viewController(_ view: ViewInterface, sortingOrderDidChange order: Model.SortingOrder) {
         actionSubject.send(.changeSortingOrder(order: order))
     }
 
     func viewControllerDidRequestClear(_ view: ViewInterface) {
+        actionSubject.send(.reset)
         actionSubject.send(.clear)
     }
 
     func viewControllerDidRequestReload(_ view: ViewInterface) {
         actionSubject.send(.reload)
     }
+
+    func viewController(_ view: ViewInterface, didRequestDuplicate item: VisualItem) {
+        actionSubject.send(.duplicate(items: [item]))
+    }
 }
+#endif // USE_COMBINE_FOR_VIEW_ACTIONS

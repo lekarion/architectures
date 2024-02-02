@@ -1,0 +1,23 @@
+/* Class = "UILabel"; text = "Out Direction"; ObjectID = "JfV-Pu-Vn0"; */
+"JfV-Pu-Vn0.text" = "Напрямок виходу";
+
+/* Class = "UILabel"; text = "About"; ObjectID = "PTK-sx-g00"; */
+"PTK-sx-g00.text" = "Про застосунок";
+
+/* Class = "UILabel"; text = "Color"; ObjectID = "fgi-AZ-fAz"; */
+"fgi-AZ-fAz.text" = "Колір";
+
+/* Class = "UILabel"; text = "In Direction"; ObjectID = "iZf-4v-O7i"; */
+"iZf-4v-O7i.text" = "Напрямок входження";
+
+/* Class = "UITableViewSection"; headerTitle = "Details Presentation"; ObjectID = "j0O-Ic-hPf"; */
+"j0O-Ic-hPf.headerTitle" = "Презенація деталей";
+
+"2oI-wa-uqt.headerTitle" = "Інше";
+"A14-a7-hb7.text" = "Очистити кеш зображень";
+
+"MGW-bs-kw5.text" = "Увага!";
+"bQh-8P-bgt.text" = "Ви дійсно хочете очистити кеш зображень? Це може уповільнити роботу вашої програми та не може бути скасовано.";
+
+"Xd6-ng-KXj.normalTitle" = "OK";
+"M4b-qK-SQw.normalTitle" = "Відміна";

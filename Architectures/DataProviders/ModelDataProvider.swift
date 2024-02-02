@@ -56,32 +56,94 @@ class ModelDataProvider: DataProviderInterface {
         return structure
     }
 
-    func merge(_ items: [DataItemInterface]) {
-        mutableStructure = items.compactMap { Self.permanentNames.contains($0.title) ? nil : DataItem(iconName: $0.iconName, title: $0.title, description: $0.description) }
+    func merge(_ items: [DataItemInterface], autoFlush: Bool) {
+        var validationTitles = Set<String>()
+        mutableStructure = items.compactMap {
+            guard !Self.permanentNames.contains($0.title) else { return nil }
+
+            let effectiveTitle = $0.originalTitle ?? $0.title
+            guard !validationTitles.contains(effectiveTitle) else { return nil }
+
+            validationTitles.insert(effectiveTitle)
+
+            return DataItem(iconName: $0.iconName, title: $0.title, originalTitle: $0.originalTitle, description: $0.description)
+        }
+
         loaded = false
+        flushed = false
+
+        guard autoFlush else { return }
+
+        flushingQueue.async { [weak self] in
+            self?.flush(forced: true)
+        }
+    }
+
+    func duplicate(_ items: [DataItemInterface]) -> [DataItemInterface] {
+        items.compactMap { [weak self] (item: DataItemInterface) -> DataItemInterface? in
+            guard nil == item.originalTitle else { return nil }
+            guard Self.permanentNames.contains(item.title) else { return nil }
+            guard self?.mutableNames.contains(item.title) == false else { return nil }
+
+            var newIconName = Self.duplicateIconNamePrefix + item.title
+            var nameParts = [item.title, "duplicated"]
+            if let iconName = item.iconName {
+                nameParts.append(iconName)
+                newIconName += iconName
+            }
+
+            return DataItem(iconName: newIconName, title: nameParts.joined(separator: Self.duplicateNameSeparator), originalTitle: item.title, description: item.description)
+        }
     }
 
     func flush() {
-        let structure = mutableStructure as? [DataItem] ?? []
-
-        guard let data = try? JSONEncoder().encode(structure) else { return }
-        try? data.write(to: urlToFile)
+        flush(forced: false)
     }
 
-    private var mutableStructure: [DataItemInterface]?
+    private func flush(forced: Bool) {
+        guard !flushed || forced else { return }
+
+        let structure = mutableStructure as? [DataItem] ?? []
+
+        do {
+            let data = try JSONEncoder().encode(structure)
+            try data.write(to: urlToFile)
+            flushed = true
+        } catch {
+            "\(Self.logPrefix): \(#function); \(error)".printToStderr()
+        }
+    }
+
+    private var mutableStructure: [DataItemInterface]? {
+        didSet {
+            mutableNames = Set(mutableStructure?.compactMap({ $0.originalTitle }) ?? [])
+        }
+    }
+    private var mutableNames = Set<String>()
+
     private var structure = [DataItemInterface]()
     private var loaded = false
+    private var flushed = true
 
     private lazy var urlToFile: URL = {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
         return URL(fileURLWithPath: path ?? NSHomeDirectory(), isDirectory: true).appendingPathComponent("\(identifier).json", conformingTo: .json)
     }()
+
+    private lazy var flushingQueue: DispatchQueue = {
+        DispatchQueue(label: "com.modelDataProvider.flushingQueue", qos: .background)
+    }()
 }
 
 private extension ModelDataProvider {
+    static let logPrefix = "ModelDataProvider"
+    static let duplicateNameSeparator = "-@-"
+    static let duplicateIconNamePrefix = "transformedIcon."
+
     struct DataItem: DataItemInterface, Codable {
         let iconName: String?
         let title: String
+        var originalTitle: String?
         let description: String?
     }
 

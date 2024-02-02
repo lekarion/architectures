@@ -33,12 +33,19 @@ extension ViewModel {
                     self.model.sortingOrder = order
                     self.settings?.sortingOrder = order.toSortingOrder()
 
-                    guard !self.model.structure.value.isEmpty else { break }
+                    guard !self.model.structure.isEmpty else { break }
                     self.model.reload()
                 case .clear:
                     self.model.clear()
+                case .reset:
+                    self.model.reset()
                 case .reload:
                     self.model.reload()
+                case .duplicate(let items):
+                    let dataItems = self.model.validateForDuplication(items.compactMap({ $0.toModelItem() }))
+                    guard !dataItems.isEmpty else { break }
+
+                    self.model.duplicate(dataItems)
                 }
             }.store(in: &bag)
         }
@@ -61,7 +68,22 @@ extension ViewModel {
         func clearData() {
             model.clear()
         }
+
+        func resetData() {
+            model.reset()
+        }
     #endif // USE_COMBINE_FOR_VIEW_ACTIONS
+
+        func validateForDuplication(_ items: [VisualItem]) -> Bool {
+            !model.validateForDuplication(items.compactMap({ $0.toModelItem() })).isEmpty
+        }
+
+        func duplicate(_ items: [VisualItem]) {
+            let dataItems = model.validateForDuplication(items.compactMap({ $0.toModelItem() }))
+            guard !dataItems.isEmpty else { return }
+
+            model.duplicate(dataItems)
+        }
 
         init(_ identifier: String? = nil) {
             guard let appCoordinator = UIApplication.shared.delegate as? AppCoordinator else {
@@ -72,7 +94,8 @@ extension ViewModel {
 
             settings = appCoordinator.settingsProvider(for: "\(baseIdentifier).settings")
 
-            model = Model.PlainModel(with: appCoordinator.dataProvider(for: "\(baseIdentifier).data"))
+            let providersIdentifier = "\(baseIdentifier).data"
+            model = Model.PlainModel(with: appCoordinator.dataProvider(for: providersIdentifier), imageProvider: appCoordinator.imagesProvider(for: providersIdentifier))
             model.sortingOrder = Model.SortingOrder(with: settings?.sortingOrder ?? .none)
 
             structureBind = GenericBind(value: Self.emptyStructure + model.structure.compactMap { $0.toVisualItem() })

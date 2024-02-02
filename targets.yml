@@ -27,6 +27,7 @@ targetTemplates:
     productName: ${target_name}
     settings:
       GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_NSHumanReadableCopyright: Copyright © 2022-2024 developer. All rights reserved.
     sources:
       - "${target_name}"
 

@@ -11,10 +11,23 @@ import XCTest
 
 extension ArchitecturesTests {
     func testCombineModel() throws {
-        let model = Model.CombineModel(with: modelDataProvider)
+        let model = Model.CombineModel(with: modelDataProvider, imageProvider: imagesProvider)
 
         var cancellable: AnyCancellable?
         try baseModelProcessing(model: model) { handler in
+            cancellable = model.structureBind.sink {
+                handler($0)
+            }
+        }
+
+        cancellable?.cancel()
+    }
+
+    func testCombineDuplication() throws {
+        let model = Model.CombineModel(with: modelDataProvider, imageProvider: imagesProvider)
+
+        var cancellable: AnyCancellable?
+        try baseModelDuplication(model: model) { handler in
             cancellable = model.structureBind.sink {
                 handler($0)
             }
@@ -37,7 +50,7 @@ extension ArchitecturesTests {
     }
 
     func testMVPPresenterCombine() throws {
-        let model = Model.CombineModel(with: modelDataProvider)
+        let model = Model.CombineModel(with: modelDataProvider, imageProvider: imagesProvider)
         let view = TestMVPViewCombine()
         let presenter = Presenter.MVPCombine("\(Self.identifier).mvp.combine")
 

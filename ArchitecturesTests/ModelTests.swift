@@ -14,10 +14,24 @@ import Combine
 
 extension ArchitecturesTests {
     func testPlainModel() throws {
-        let model = Model.PlainModel(with: modelDataProvider)
+        let model = Model.PlainModel(with: modelDataProvider, imageProvider: imagesProvider)
 
         var cancellable: BindCancellable?
         try baseModelProcessing(model: model) {
+            cancellable = model.structureBind.bind($0)
+        }
+
+        XCTAssertTrue(model.structureBind.isInUse)
+
+        cancellable?.cancel()
+        XCTAssertFalse(model.structureBind.isInUse)
+    }
+
+    func testPlainDuplication() throws {
+        let model = Model.PlainModel(with: modelDataProvider, imageProvider: imagesProvider)
+
+        var cancellable: BindCancellable?
+        try baseModelDuplication(model: model) {
             cancellable = model.structureBind.bind($0)
         }
 
@@ -42,7 +56,7 @@ extension ArchitecturesTests {
     }
 
     func testMVPPresenter() throws {
-        let model = Model.PlainModel(with: modelDataProvider)
+        let model = Model.PlainModel(with: modelDataProvider, imageProvider: imagesProvider)
         let view = TestMVPView()
         let presenter = Presenter.MVP("\(Self.identifier).mvp.combine")
 
@@ -105,6 +119,69 @@ extension ArchitecturesTests {
         XCTAssertEqual(callsCount, step)
         XCTAssertEqual(lastCount, 0)
         XCTAssertTrue(model.structure.isEmpty)
+    }
+
+    func baseModelDuplication<T: ModelInterface>(model: T, bind: (@escaping ([ModelItem]) -> Void) -> Void) throws {
+        var callsCount = 0
+        var lastCount = model.structure.count
+
+        currentExpectation = XCTestExpectation(description: "Waiting for init")
+        bind { [weak self] value in
+            callsCount += 1
+            lastCount = value.count
+            self?.currentExpectation?.fulfill()
+        }
+
+        currentExpectation = XCTestExpectation(description: "Waiting for reload")
+
+        var step = 1
+        model.sortingOrder = .none
+        model.reload()
+        wait(for: [currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertNotEqual(lastCount, 0)
+        XCTAssertFalse(model.structure.isEmpty)
+
+        currentExpectation = XCTestExpectation(description: "Waiting for reset")
+
+        step += 1
+        model.reset()
+        wait(for: [currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertNotEqual(lastCount, 0)
+
+        let startCount = lastCount
+        let count = min(3, startCount)
+        let itemsToDuplicate = Array(model.structure[0 ..< count])
+
+        currentExpectation = XCTestExpectation(description: "Waiting for validation")
+        currentExpectation?.isInverted = true
+
+        let validItems = model.validateForDuplication(itemsToDuplicate)
+        wait(for: [currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertEqual(validItems.count, count)
+
+        currentExpectation = XCTestExpectation(description: "Waiting for duplication")
+
+        step += 1
+        model.duplicate(validItems)
+        wait(for: [currentExpectation!], timeout: 10.0)
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertEqual(lastCount, startCount + validItems.count)
+
+        currentExpectation = XCTestExpectation(description: "Waiting for validation 1")
+        currentExpectation?.isInverted = true
+
+        let validItems2 = model.validateForDuplication(itemsToDuplicate)
+        wait(for: [currentExpectation!], timeout: 2.0)
+
+        XCTAssertEqual(callsCount, step)
+        XCTAssertTrue(validItems2.isEmpty)
     }
 
     func baseViewModelProcessing<T: ViewModelInterface>(viewModel: ViewModelHolder<T>, bind: (@escaping ([VisualItem]) -> Void) -> Void) throws {
